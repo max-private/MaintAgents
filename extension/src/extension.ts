@@ -17,7 +17,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
     try {
         // Initialize the orchestrator adapter
-        orchestratorAdapter = new OrchestratorAdapter();
+        // context.extensionPath is the root of the installed extension,
+        // where metadata/ and agents/ are bundled alongside the source.
+        orchestratorAdapter = new OrchestratorAdapter(context.extensionPath);
         await orchestratorAdapter.initialize();
 
         // Create and register the chat participant

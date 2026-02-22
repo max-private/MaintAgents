@@ -32,7 +32,7 @@ function section(title) {
 // ── Test Runner ───────────────────────────────────────────────────────────────
 
 async function runTests() {
-  const baseDir = path.join(__dirname);
+  const baseDir = path.join(__dirname, 'extension');
 
   // ── 1. Registry initialisation ────────────────────────────────────────────
   section('1. AgentRegistry — Loading & Indexing');

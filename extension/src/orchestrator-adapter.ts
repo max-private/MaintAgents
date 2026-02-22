@@ -34,10 +34,17 @@ export class OrchestratorAdapter {
     private initialized: boolean = false;
 
     /**
+     * @param extensionPath  Absolute path to the extension install directory,
+     *                       passed from context.extensionPath in extension.ts.
+     *                       metadata/ and agents/ are expected directly inside it.
+     */
+    constructor(private extensionPath: string) {}
+
+    /**
      * Initializes the orchestrator adapter.
-     * 
-     * This method sets up the agent registry and router by resolving the
-     * correct paths to the metadata and YAML files.
+     *
+     * This method sets up the agent registry and router using the extension
+     * install path, which contains the bundled metadata/ and agents/ directories.
      */
     async initialize(): Promise<void> {
         if (this.initialized) {
@@ -46,10 +53,8 @@ export class OrchestratorAdapter {
         }
 
         try {
-            // Resolve the base directory path
-            // From extension/src -> ../../ (MaintenanceAgents root)
-            const extensionDir = path.dirname(path.dirname(__dirname));
-            const baseDir = path.dirname(extensionDir);
+            // metadata/ and agents/ live directly inside the extension directory
+            const baseDir = this.extensionPath;
 
             console.log(`Initializing orchestrator with base directory: ${baseDir}`);
 
