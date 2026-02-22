@@ -16,3 +16,6 @@ extension/*.vsix
 .DS_Store
 Thumbs.db
 *.tmp
+
+# VS Code personal settings (machine-specific, not shared)
+.vscode/
