@@ -1,0 +1,30 @@
+﻿name: Eclipse RCP Maintenance Agent
+capabilities:
+  - rcp-version-upgrade
+  - plugin-bundle-management
+  - osgi-framework-update
+  - ui-framework-modernization
+  - tycho-build-optimization
+  - pde-tooling-updates
+supported_tools:
+  - Eclipse IDE
+  - Tycho
+  - PDE
+  - Equinox
+  - OSGi
+  - Bundle Repository
+target_versions:
+  - eclipse-oxygen
+  - eclipse-photon
+  - eclipse-2018
+  - eclipse-2019
+  - eclipse-2020
+  - eclipse-2021
+  - eclipse-2022-lts
+trigger_events:
+  - eclipse-rcp
+  - osgi-bundle
+  - tycho-build
+  - rcp-upgrade
+risk_level: medium
+estimated_execution_time: 30-90 minutes

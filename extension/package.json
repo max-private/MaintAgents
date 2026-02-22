@@ -1,0 +1,70 @@
+{
+  "name": "maintenance-agents",
+  "displayName": "Maintenance Agents",
+  "description": "Specialized maintenance agents for Java, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
+  "version": "1.0.0",
+  "publisher": "MaintenanceAgents",
+  "license": "MIT",
+  "author": {
+    "name": "Maintenance Agents Team"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maintenanceagents/maintenance-agents"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "dist/extension.js",
+  "extensionKind": ["ui"],
+  "categories": ["AI", "Developer Tools", "Linters"],
+  "galleryBanner": {
+    "color": "#f0ad4e",
+    "theme": "dark"
+  },
+  "activationEvents": ["onStartupFinished"],
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "maintenance",
+        "name": "maintenance",
+        "fullName": "Maintenance Agents",
+        "description": "Specialized agents for Java maintenance, Eclipse RCP, web services, OS compatibility, vulnerability fixes, test fixes, and code quality issues",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "fix",
+            "description": "Fix code issues and bugs"
+          },
+          {
+            "name": "analyze",
+            "description": "Analyze code for issues"
+          },
+          {
+            "name": "upgrade",
+            "description": "Upgrade code to newer versions"
+          },
+          {
+            "name": "security",
+            "description": "Check for security vulnerabilities"
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

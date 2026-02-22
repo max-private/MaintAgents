@@ -1,0 +1,18 @@
+# Claude Code internal files
+.claude/
+
+# Dependencies
+node_modules/
+
+# VS Code extension build output
+extension/dist/
+extension/*.vsix
+
+# TypeScript build artifacts (orchestrator compiled output is committed intentionally)
+*.js.map
+*.d.ts.map
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.tmp

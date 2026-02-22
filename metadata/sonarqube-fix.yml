@@ -1,0 +1,34 @@
+﻿name: SonarQube Fix Maintenance Agent
+capabilities:
+  - code-smell-remediation
+  - complexity-reduction
+  - bug-pattern-fixing
+  - code-duplication-elimination
+  - security-hotspot-fixing
+  - quality-gate-compliance
+supported_tools:
+  - SonarQube
+  - SonarScanner
+  - Checkstyle
+  - PMD
+  - SpotBugs
+  - Jacoco
+  - Mockito
+issue_categories:
+  - code-smell
+  - bug
+  - vulnerability
+  - security-hotspot
+  - code-duplication
+  - maintainability-issue
+priority_areas:
+  - code-quality
+  - code-maintainability
+  - static-analysis
+trigger_events:
+  - sonarqube
+  - code-smell
+  - quality-gate
+  - sonar-issue
+risk_level: medium
+estimated_execution_time: 20-75 minutes

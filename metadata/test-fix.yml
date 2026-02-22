@@ -1,0 +1,36 @@
+﻿name: Test Fix Maintenance Agent
+capabilities:
+  - test-failure-analysis
+  - flaky-test-detection
+  - test-coverage-optimization
+  - testing-framework-upgrade
+  - test-environment-management
+  - test-report-generation
+supported_tools:
+  - JUnit 4/5
+  - Mockito
+  - TestNG
+  - AssertJ
+  - REST-Assured
+  - Cucumber
+  - Selenium WebDriver
+  - Archunit
+test_types:
+  - unit-tests
+  - integration-tests
+  - api-tests
+  - ui-tests
+  - performance-tests
+  - contract-tests
+priority_areas:
+  - test-quality
+  - test-coverage
+  - test-stability
+trigger_events:
+  - test-failure
+  - failing-tests
+  - flaky-test
+  - junit-failure
+  - test-error
+risk_level: low
+estimated_execution_time: 15-60 minutes

@@ -1,0 +1,28 @@
+﻿name: Java Maintenance Agent
+version: 1.0.0
+capabilities:
+  - java-version-upgrade
+  - dependency-update
+  - api-modernization
+  - spring-framework-updates
+  - build-tool-optimization
+supported_tools:
+  - Maven
+  - Gradle
+  - Spring Boot
+target_versions:
+  - java8
+  - java11
+  - java17
+  - java21
+priority_areas:
+  - performance
+  - code-quality
+  - compatibility
+  - maintainability
+trigger_events:
+  - java-upgrade
+  - java-version
+  - jdk-upgrade
+risk_level: medium
+estimated_execution_time: 15-60 minutes

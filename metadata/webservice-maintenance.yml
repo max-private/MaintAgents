@@ -1,0 +1,33 @@
+﻿name: Web Service Maintenance Agent
+capabilities:
+  - rest-api-upgrade
+  - soap-service-migration
+  - microservice-optimization
+  - spring-boot-update
+  - api-security-hardening
+  - api-contract-versioning
+supported_tools:
+  - Spring Boot
+  - Spring WebFlux
+  - JAX-RS
+  - RESTEasy
+  - Quarkus
+  - Vert.x
+target_versions:
+  - spring-boot-2.7
+  - spring-boot-3.0
+  - spring-boot-3.1
+  - spring-boot-3.2
+  - spring-framework-6
+priority_areas:
+  - api-design
+  - microservice-architecture
+  - backward-compatibility
+trigger_events:
+  - rest-api
+  - soap-migration
+  - microservice
+  - api-upgrade
+  - spring-boot-migration
+risk_level: medium
+estimated_execution_time: 20-75 minutes
