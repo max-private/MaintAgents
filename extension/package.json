@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "Specialized maintenance agents for Java, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
