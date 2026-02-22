@@ -119,6 +119,40 @@ cd extension
 npm run build
 ```
 
+### Package the extension (.vsix)
+
+Install the VS Code Extension CLI if you haven't already:
+
+```bash
+npm install -g @vscode/vsce
+```
+
+Then package from the `extension/` directory:
+
+```bash
+cd extension
+npm run build       # compile TypeScript first
+npm run package     # produces maintenance-agents-1.0.0.vsix
+```
+
+### Install the packaged extension
+
+**Option 1 — Command line:**
+
+```bash
+code --install-extension extension/maintenance-agents-1.0.0.vsix
+```
+
+**Option 2 — VS Code UI:**
+
+1. Open VS Code
+2. Go to Extensions (`Ctrl+Shift+X`)
+3. Click the `...` menu → **Install from VSIX...**
+4. Select `extension/maintenance-agents-1.0.0.vsix`
+5. Reload VS Code when prompted
+
+Once installed, open any chat panel and type `@maintenance` to start using the extension.
+
 ### Run orchestration tests
 
 ```bash
