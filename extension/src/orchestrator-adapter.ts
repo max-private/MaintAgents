@@ -97,7 +97,7 @@ export class OrchestratorAdapter {
             // Map scored agents to agent info
             const selectedAgents: AgentInfo[] = filteredAgents.map(scored => ({
                 name: scored.agent.name,
-                description: scored.agent.description,
+                description: scored.agent.description ?? '',
                 score: scored.score
             }));
 
@@ -107,7 +107,7 @@ export class OrchestratorAdapter {
             return {
                 selectedAgents,
                 fullPrompt,
-                agentCount: this.registry.getAgents().length,
+                agentCount: this.registry.getAllAgents().length,
                 summary
             };
         } catch (error) {
