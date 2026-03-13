@@ -8,6 +8,8 @@ capabilities:
   - test-report-generation
   - dotnet-test-framework-upgrade
   - dotnet-coverage-integration
+  - python-test-framework-upgrade
+  - perl-test-framework-upgrade
 supported_tools:
   - JUnit 4/5
   - Mockito
@@ -26,6 +28,15 @@ supported_tools:
   - coverlet
   - dotnet test
   - ReportGenerator
+  - pytest
+  - coverage.py
+  - tox
+  - pytest-mock
+  - pytest-cov
+  - Test::More
+  - Test2::Suite
+  - Devel::Cover
+  - prove
 test_types:
   - unit-tests
   - integration-tests
@@ -48,5 +59,9 @@ trigger_events:
   - mstest-failure
   - dotnet-test-failure
   - coverlet-issue
+  - pytest-failure
+  - tox-failure
+  - perl-test-failure
+  - prove-failure
 risk_level: low
 estimated_execution_time: 15-60 minutes

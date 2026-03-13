@@ -19,11 +19,11 @@ describe('AgentRegistry — loading & indexing', () => {
 
   test('calling initialize() twice is idempotent', async () => {
     await registry.initialize(); // second call — should not reload
-    expect(registry.getAgentCount()).toBe(8);
+    expect(registry.getAgentCount()).toBe(10);
   });
 
   test('all 8 agents are loaded', () => {
-    expect(registry.getAgentCount()).toBe(8);
+    expect(registry.getAgentCount()).toBe(10);
   });
 
   test.each([
@@ -35,6 +35,8 @@ describe('AgentRegistry — loading & indexing', () => {
     'os-compatibility',
     'eclipse-rcp',
     'dotnet-maintenance',
+    'python-maintenance',
+    'perl-maintenance',
   ])('agent "%s" is present', (id) => {
     expect(registry.hasAgent(id)).toBe(true);
   });
@@ -81,6 +83,8 @@ describe('AgentRegistry — loading & indexing', () => {
     ['eclipse-rcp',            'maintenance'],
     ['webservice-maintenance', 'maintenance'],
     ['dotnet-maintenance',     'maintenance'],
+    ['python-maintenance',     'maintenance'],
+    ['perl-maintenance',       'maintenance'],
   ])('agent "%s" has inferred type "%s"', (id, expectedType) => {
     expect(registry.getAgent(id).type).toBe(expectedType);
   });

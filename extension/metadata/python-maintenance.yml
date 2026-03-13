@@ -1,0 +1,49 @@
+name: Python Maintenance Agent
+version: 1.0.0
+language: python
+capabilities:
+  - python-version-upgrade
+  - pip-dependency-management
+  - type-annotation-modernization
+  - django-flask-fastapi-updates
+  - code-style-enforcement
+  - virtualenv-management
+  - python2-to-python3-migration
+supported_tools:
+  - pip
+  - pipenv
+  - poetry
+  - uv
+  - mypy
+  - pylint
+  - flake8
+  - ruff
+  - black
+  - isort
+  - bandit
+  - pytest
+  - tox
+target_versions:
+  - python2.7
+  - python3.8
+  - python3.9
+  - python3.10
+  - python3.11
+  - python3.12
+  - python3.13
+priority_areas:
+  - performance
+  - code-quality
+  - compatibility
+  - maintainability
+trigger_events:
+  - python-upgrade
+  - pip-update
+  - django-migration
+  - flask-upgrade
+  - python2-to-3
+  - requirements-update
+  - virtualenv-issue
+  - python-deprecation
+risk_level: medium
+estimated_execution_time: 15-60 minutes

@@ -69,6 +69,22 @@ The OS Compatibility Maintenance Agent provides automated assistance for managin
 - Address .NET runtime OS-specific differences in threading, signals, and process management
 - Suggest portable abstractions for Windows registry access and Linux /proc file system
 
+### 9. Python Native Interop (ctypes / cffi)
+- Fix  CDLL / WinDLL loading failures caused by OS-specific library paths
+- Correct  struct field layouts and pointer types for 32-bit vs 64-bit platforms
+- Migrate from  to  (ABI mode) for safer native library integration
+- Resolve  /  /  issues in Python native extensions
+- Fix Python C-extension (.pyd / .so) build failures caused by compiler or ABI changes
+- Handle platform-specific  checks and suggest  patterns
+
+### 10. Perl Native Extension (XS / Inline::C)
+- Diagnose XS compilation failures caused by Perl version ABI changes
+- Fix  and  issues when upgrading Perl or moving between platforms
+- Migrate fragile XS glue code to  for simpler maintenance
+- Resolve platform-specific  native compilation flags
+- Handle 32-bit / 64-bit IV/UV size differences in XS typemaps
+- Address Windows-specific XS build issues using Strawberry Perl or MSVC
+
 ## Target Platforms
 
 ### Windows

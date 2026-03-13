@@ -41,7 +41,7 @@ async function runTests() {
   await registry.initialize();
 
   assert('Registry is ready after initialize()', registry.isReady());
-  assert('All 8 agents loaded', registry.getAgentCount() === 8,
+  assert('All 10 agents loaded', registry.getAgentCount() === 10,
          `got ${registry.getAgentCount()}`);
 
   const agents = registry.getAllAgents();
@@ -56,6 +56,9 @@ async function runTests() {
     'webservice-maintenance',
     'os-compatibility',
     'eclipse-rcp',
+    'dotnet-maintenance',
+    'python-maintenance',
+    'perl-maintenance',
     'dotnet-maintenance',
   ];
   for (const id of expectedIds) {
@@ -147,6 +150,9 @@ async function runTests() {
     {
       query: 'Eclipse RCP plugin Tycho OSGi bundle upgrade',
       expectedTop: 'eclipse-rcp',
+    'dotnet-maintenance',
+    'python-maintenance',
+    'perl-maintenance',
       label: 'Eclipse RCP query → eclipse-rcp agent',
     },
   ];

@@ -62,6 +62,20 @@ The SonarQube Fix Maintenance Agent provides automated assistance for code quali
 - Map SonarQube rule IDs (e.g. S2259, S4158) to their Roslyn equivalents for .NET projects
 - Configure `.editorconfig` and `Directory.Build.props` to enforce analyzer severity across the solution
 
+### 8. Python Static Analysis (pylint / ruff / bandit)
+- Configure  and  rules in  and suppress false positives cleanly
+- Fix common SonarQube Python issues: string duplication, assert in production code
+- Integrate  security linter and fix B-prefixed security warnings (SQL injection, hardcoded secrets)
+- Run  for Python with - Configure SonarQube Python Quality Gate thresholds and map to  /  severity levels
+- Apply  to eliminate type-related SonarQube issues
+
+### 9. Perl Static Analysis (Perl::Critic)
+- Map SonarQube Perl rule violations to  policy names and fix them
+- Configure  severity levels to match project Quality Gate thresholds
+- Fix common violations: , , - Integrate  output into SonarQube via Generic Issue Import format
+- Apply  to eliminate formatting-related code smell warnings
+- Track  violation trends in SonarQube dashboards
+
 ## Issue Categories
 
 | Category | Description | Examples |

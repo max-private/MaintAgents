@@ -63,6 +63,19 @@ The Test Fix Maintenance Agent provides automated assistance for test failure de
 - Configure `WebApplicationFactory<T>` for ASP.NET Core integration tests and fix host startup failures
 - Resolve test discovery failures caused by SDK-style project misconfigurations or missing test adapters
 
+### 8. Python Testing Framework Upgrade & Fix
+- Diagnose and fix  failures: fixture scope issues, conftest.py resolution, parametrize errors
+- Migrate from  to idiomatic  functions with plain - Fix  failures caused by event loop scope mismatches
+- Update  targets after module refactoring; migrate to - Integrate  with  and enforce minimum thresholds in - Fix  environment failures caused by Python version drift or missing extras
+
+### 9. Perl Testing Framework Upgrade & Fix
+- Diagnose  /  failures: plan mismatch, unexpected test output
+- Fix  harness failures caused by TAP formatting issues or missing test files
+- Migrate from  ok/is/like to  equivalents
+- Update  and  usage after Perl version upgrades
+- Integrate  coverage reports into CI and fix uncovered code paths
+- Resolve test order dependency issues with explicit test isolation
+
 ## Test Types
 
 | Type | Purpose | Tools |

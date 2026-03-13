@@ -28,6 +28,10 @@ describe('AgentRouter — query routing', () => {
     ['NuGet package outdated after dotnet upgrade to net8',             'dotnet-maintenance'],
     ['ASP.NET Core migration from System.Web to minimal hosting model', 'dotnet-maintenance'],
     ['dotnet csharp modernization nullable reference types and records', 'dotnet-maintenance'],
+    ['upgrade python 3.8 to python 3.12 and update requirements',         'python-maintenance'],
+    ['pip audit vulnerability found in django flask requirements update',   'python-maintenance'],
+    ['perl cpan carton upgrade modernization moose migration',              'perl-maintenance'],
+    ['perl critic issue upgrade cpanm dependencies carton',                 'perl-maintenance'],
   ])('"%s" → top agent is %s', (query, expectedId) => {
     const results = router.selectAgentsForQuery(query, 3);
     expect(results.length).toBeGreaterThan(0);
@@ -37,7 +41,7 @@ describe('AgentRouter — query routing', () => {
   // ── Score caps & integrity ──────────────────────────────────────────────
 
   test('no agent score exceeds 140', () => {
-    const results = router.selectAgentsForQuery('java spring security sonarqube test vulnerability', 8);
+    const results = router.selectAgentsForQuery('java spring security sonarqube test vulnerability', 10);
     results.forEach(r => expect(r.score).toBeLessThanOrEqual(140));
   });
 
@@ -93,14 +97,14 @@ describe('AgentRouter — query routing', () => {
   // ── Sorting ─────────────────────────────────────────────────────────────
 
   test('results are sorted descending by score', () => {
-    const results = router.selectAgentsForQuery('java spring security test sonarqube', 8);
+    const results = router.selectAgentsForQuery('java spring security test sonarqube', 10);
     for (let i = 0; i < results.length - 1; i++) {
       expect(results[i].score).toBeGreaterThanOrEqual(results[i + 1].score);
     }
   });
 
   test('all returned scores are positive', () => {
-    const results = router.selectAgentsForQuery('java maven spring security', 8);
+    const results = router.selectAgentsForQuery('java maven spring security', 10);
     results.forEach(r => expect(r.score).toBeGreaterThan(0));
   });
 
@@ -154,6 +158,6 @@ describe('AgentRouter — query routing', () => {
   });
 
   test('getAgentsByRiskLevelPreference() returns all agents', () => {
-    expect(router.getAgentsByRiskLevelPreference().length).toBe(8);
+    expect(router.getAgentsByRiskLevelPreference().length).toBe(10);
   });
 });

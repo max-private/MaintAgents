@@ -8,6 +8,8 @@ capabilities:
   - system-integration-update
   - dotnet-pinvoke-management
   - dotnet-cross-platform-fix
+  - python-native-interop
+  - perl-xs-extension
 supported_tools:
   - JNI
   - JNA
@@ -19,6 +21,10 @@ supported_tools:
   - CsWin32
   - System.Runtime.InteropServices
   - Microsoft.Windows.CsWin32
+  - ctypes
+  - cffi
+  - Inline::C
+  - DynaLoader
 target_platforms:
   - windows-10
   - windows-11
@@ -42,5 +48,9 @@ trigger_events:
   - pinvoke-issue
   - dotnet-os-compatibility
   - interop-failure
+  - ctypes-issue
+  - python-native
+  - xs-compilation
+  - perl-native
 risk_level: high
 estimated_execution_time: 25-80 minutes

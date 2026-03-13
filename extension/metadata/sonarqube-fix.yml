@@ -8,6 +8,8 @@ capabilities:
   - quality-gate-compliance
   - roslyn-analyzer-fixes
   - dotnet-format-enforcement
+  - python-lint-fixes
+  - perl-critic-fixes
 supported_tools:
   - SonarQube
   - SonarScanner
@@ -21,6 +23,12 @@ supported_tools:
   - StyleCop.Analyzers
   - dotnet-format
   - Microsoft.CodeAnalysis
+  - pylint
+  - ruff
+  - flake8
+  - bandit
+  - Perl::Critic
+  - perltidy
 issue_categories:
   - code-smell
   - bug
@@ -40,5 +48,9 @@ trigger_events:
   - roslyn-warning
   - dotnet-sonarscanner
   - analyzer-warning
+  - pylint-warning
+  - ruff-warning
+  - bandit-issue
+  - perl-critic-issue
 risk_level: medium
 estimated_execution_time: 20-75 minutes
