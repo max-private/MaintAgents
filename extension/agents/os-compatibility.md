@@ -53,6 +53,22 @@ The OS Compatibility Maintenance Agent provides automated assistance for managin
 - Enhance system resource management
 - Suggest platform abstraction improvements
 
+### 7. .NET P/Invoke & Native Interop
+- Diagnose P/Invoke (Platform Invocation Services) signature mismatches and calling convention errors
+- Generate correct DllImport / LibraryImport (source-generated P/Invoke) declarations using CsWin32
+- Fix marshalling issues: struct layout, string encoding (ANSI vs UTF-16), SafeHandle usage
+- Migrate from manual P/Invoke to CsWin32 (Microsoft.Windows.CsWin32) source generators
+- Handle 32-bit / 64-bit struct alignment differences across Windows and Linux
+- Address runtime OS abstraction issues using System.Runtime.InteropServices.RuntimeInformation
+
+### 8. .NET Cross-Platform Runtime Fixes
+- Identify APIs flagged by the Platform Compatibility Analyzer (CA1416) and suggest alternatives
+- Fix Windows-only code paths to use conditional guards (OperatingSystem.IsWindows())
+- Replace System.Drawing.Common (Windows-only) with cross-platform alternatives (SkiaSharp, ImageSharp)
+- Handle Linux filesystem case-sensitivity issues in .NET path operations
+- Address .NET runtime OS-specific differences in threading, signals, and process management
+- Suggest portable abstractions for Windows registry access and Linux /proc file system
+
 ## Target Platforms
 
 ### Windows
@@ -108,18 +124,3 @@ The OS Compatibility Maintenance Agent provides automated assistance for managin
 - Graceful fallback mechanisms for OS-specific features
 - Team review checkpoints for platform-critical changes
 - Staged rollout per platform recommendations
-### 7. .NET P/Invoke & Native Interop
-- Diagnose P/Invoke (Platform Invocation Services) signature mismatches and calling convention errors
-- Generate correct DllImport / LibraryImport (source-generated P/Invoke) declarations using CsWin32
-- Fix marshalling issues: struct layout, string encoding (ANSI vs UTF-16), SafeHandle usage
-- Migrate from manual P/Invoke to CsWin32 (Microsoft.Windows.CsWin32) source generators
-- Handle 32-bit / 64-bit struct alignment differences across Windows and Linux
-- Address runtime OS abstraction issues using System.Runtime.InteropServices.RuntimeInformation
-
-### 8. .NET Cross-Platform Runtime Fixes
-- Identify APIs flagged by the Platform Compatibility Analyzer (CA1416) and suggest alternatives
-- Fix Windows-only code paths to use conditional guards (OperatingSystem.IsWindows())
-- Replace System.Drawing.Common (Windows-only) with cross-platform alternatives (SkiaSharp, ImageSharp)
-- Handle Linux filesystem case-sensitivity issues in .NET path operations
-- Address .NET runtime OS-specific differences in threading, signals, and process management
-- Suggest portable abstractions for Windows registry access and Linux /proc file system

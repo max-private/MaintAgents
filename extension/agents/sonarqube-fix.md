@@ -53,6 +53,15 @@ The SonarQube Fix Maintenance Agent provides automated assistance for code quali
 - Generate compliance reports and trends
 - Automate Quality Gate enforcement in CI/CD
 
+### 7. Roslyn Analyzer & dotnet-sonarscanner Integration
+- Configure dotnet-sonarscanner (begin/end) in CI pipelines for .NET projects
+- Interpret and fix Roslyn analyzer warnings (CA*, IDE*, S* rules from SonarAnalyzer.CSharp)
+- Add and configure StyleCop.Analyzers for naming, layout, and documentation enforcement
+- Apply `dotnet format` for whitespace, style, and analyzer-fix passes automatically
+- Suppress false-positive warnings with documented `#pragma warning disable` or `SuppressMessage`
+- Map SonarQube rule IDs (e.g. S2259, S4158) to their Roslyn equivalents for .NET projects
+- Configure `.editorconfig` and `Directory.Build.props` to enforce analyzer severity across the solution
+
 ## Issue Categories
 
 | Category | Description | Examples |
@@ -128,11 +137,3 @@ The SonarQube Fix Maintenance Agent provides automated assistance for code quali
 - Backward compatibility verification
 - Performance impact analysis for changes
 - Team review checkpoints for major refactoring
-### 7. Roslyn Analyzer & dotnet-sonarscanner Integration
-- Configure dotnet-sonarscanner (begin/end) in CI pipelines for .NET projects
-- Interpret and fix Roslyn analyzer warnings (CA*, IDE*, S* rules from SonarAnalyzer.CSharp)
-- Add and configure StyleCop.Analyzers for naming, layout, and documentation enforcement
-- Apply `dotnet format` for whitespace, style, and analyzer-fix passes automatically
-- Suppress false-positive warnings with documented `#pragma warning disable` or `SuppressMessage`
-- Map SonarQube rule IDs (e.g. S2259, S4158) to their Roslyn equivalents for .NET projects
-- Configure `.editorconfig` and `Directory.Build.props` to enforce analyzer severity across the solution

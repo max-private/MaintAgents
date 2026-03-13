@@ -53,6 +53,16 @@ The Test Fix Maintenance Agent provides automated assistance for test failure de
 - Produce test coverage reports and visualizations
 - Enable test result integration with CI/CD systems
 
+### 7. .NET Testing Framework Upgrade & Fix
+- Diagnose and fix xUnit, NUnit, and MSTest v3 test failures including assertion mismatches
+- Migrate MSTest v1 → MSTest v3 and JUnit-style patterns to xUnit Theory / NUnit TestCase
+- Update mocking libraries: Moq 4 → Moq 4.20+ (removing obsolete `Setup` patterns), or migrate to NSubstitute / FakeItEasy
+- Integrate coverlet for .NET code coverage and wire it into `dotnet test --collect:"XPlat Code Coverage"`
+- Generate HTML/Cobertura coverage reports via ReportGenerator and enforce thresholds in CI
+- Fix flaky async tests: `async Task` test methods, `ConfigureAwait`, SynchronizationContext issues
+- Configure `WebApplicationFactory<T>` for ASP.NET Core integration tests and fix host startup failures
+- Resolve test discovery failures caused by SDK-style project misconfigurations or missing test adapters
+
 ## Test Types
 
 | Type | Purpose | Tools |
@@ -118,12 +128,3 @@ The Test Fix Maintenance Agent provides automated assistance for test failure de
 - Flaky test isolation and monitoring before removal
 - Test quarantine and warning mechanisms
 - Team review checkpoints for test changes
-### 7. .NET Testing Framework Upgrade & Fix
-- Diagnose and fix xUnit, NUnit, and MSTest v3 test failures including assertion mismatches
-- Migrate MSTest v1 → MSTest v3 and JUnit-style patterns to xUnit Theory / NUnit TestCase
-- Update mocking libraries: Moq 4 → Moq 4.20+ (removing obsolete `Setup` patterns), or migrate to NSubstitute / FakeItEasy
-- Integrate coverlet for .NET code coverage and wire it into `dotnet test --collect:"XPlat Code Coverage"`
-- Generate HTML/Cobertura coverage reports via ReportGenerator and enforce thresholds in CI
-- Fix flaky async tests: `async Task` test methods, `ConfigureAwait`, SynchronizationContext issues
-- Configure `WebApplicationFactory<T>` for ASP.NET Core integration tests and fix host startup failures
-- Resolve test discovery failures caused by SDK-style project misconfigurations or missing test adapters
