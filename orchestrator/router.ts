@@ -51,7 +51,8 @@ export class AgentRouter {
    * - Capability Match: +25 points (capability mentioned in query)
    * - Priority Area Match: +20 points (priority area mentioned in query)
    * - Tool/Framework Match: +15 points (supported tool mentioned in query)
-   * - Risk Level Adjustment: -10 (critical), -5 (high) - prefer lower risk
+   * - Risk Level Adjustment: -2 (high), -5 (critical) - prefer lower risk
+   * Max possible score: 140
    *
    * Results are sorted by score (highest first) and limited to top agents.
    *

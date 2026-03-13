@@ -1,0 +1,9 @@
+{
+  "name": "maintenance-agents-root",
+  "private": true,
+  "scripts": {
+    "install:deps": "cd extension && npm install",
+    "build": "cd extension && npm install && node node_modules/typescript/bin/tsc -p ../orchestrator/tsconfig.json",
+    "test": "npm run build && node --require ./scripts/set-node-path.js test-orchestration.js"
+  }
+}

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { MaintenanceAgentParticipant } from './copilot-participant';
 import { OrchestratorAdapter } from './orchestrator-adapter';
+import { SessionMemory } from './session-memory';
 
 let orchestratorAdapter: OrchestratorAdapter;
 
@@ -23,7 +24,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         await orchestratorAdapter.initialize();
 
         // Create and register the chat participant
-        const participant = new MaintenanceAgentParticipant(orchestratorAdapter);
+        const sessionMemory = new SessionMemory(context);
+        const participant = new MaintenanceAgentParticipant(orchestratorAdapter, sessionMemory);
 
         const chatParticipant = vscode.chat.createChatParticipant(
             'maintenance',

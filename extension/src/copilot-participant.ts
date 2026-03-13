@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { OrchestratorAdapter } from './orchestrator-adapter';
+import { SessionMemory } from './session-memory';
 
 /**
  * Information about a selected maintenance agent
@@ -28,7 +29,7 @@ interface OrchestratorResponse {
  * has already selected in the Copilot Chat picker.
  */
 export class MaintenanceAgentParticipant {
-    constructor(private adapter: OrchestratorAdapter) {}
+    constructor(private adapter: OrchestratorAdapter, private memory: SessionMemory) {}
 
     /**
      * Handles incoming chat requests.
@@ -63,12 +64,13 @@ export class MaintenanceAgentParticipant {
             const messages: vscode.LanguageModelChatMessage[] = [];
 
             // 3a: agent context — fullPrompt becomes the LLM's knowledge frame,
-            //     not shown to the user
-            messages.push(vscode.LanguageModelChatMessage.User(
+            //     not shown to the user. Prepend prior session history if available.
+            const sessionContext = this.memory.getRecentContext(3);
+            const systemContent = (sessionContext ? sessionContext + '\n\n' : '') +
                 response.fullPrompt +
                 '\n\n---\n' +
-                'Using the agent expertise above, answer the following with specific, actionable advice:'
-            ));
+                'Using the agent expertise above, answer the following with specific, actionable advice:';
+            messages.push(vscode.LanguageModelChatMessage.User(systemContent));
             messages.push(vscode.LanguageModelChatMessage.Assistant(
                 "Understood. I'll provide specific, actionable guidance based on the selected maintenance agents."
             ));
@@ -88,6 +90,13 @@ export class MaintenanceAgentParticipant {
             for await (const chunk of lmResponse.text) {
                 stream.markdown(chunk);
             }
+
+            // Step 5 — persist this query to session history
+            this.memory.save(
+                userQuery,
+                response.selectedAgents.map(a => a.name),
+                command
+            );
 
         } catch (error) {
             // Step 5 — handle cancellation silently; surface unexpected errors
@@ -116,7 +125,7 @@ export class MaintenanceAgentParticipant {
         stream.markdown(`**Routing — ${agents.length} agent${agents.length !== 1 ? 's' : ''} selected**\n\n`);
         stream.markdown('| Agent | Score |\n|-------|-------|\n');
         for (const agent of agents) {
-            stream.markdown(`| ${agent.name} | ${agent.score}/150 |\n`);
+            stream.markdown(`| ${agent.name} | ${agent.score}/140 |\n`);
         }
         stream.markdown('\n---\n\n');
     }

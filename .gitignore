@@ -8,9 +8,17 @@ node_modules/
 extension/dist/
 extension/*.vsix
 
-# TypeScript build artifacts (orchestrator compiled output is committed intentionally)
+# TypeScript build artifacts
 *.js.map
 *.d.ts.map
+
+# Orchestrator compiled output (generated — run `npm run build` to rebuild)
+orchestrator/agent-registry.js
+orchestrator/agent-registry.d.ts
+orchestrator/prompt-builder.js
+orchestrator/prompt-builder.d.ts
+orchestrator/router.js
+orchestrator/router.d.ts
 
 # OS / editor
 .DS_Store

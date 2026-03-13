@@ -131,22 +131,18 @@ export class OrchestratorAdapter {
     private filterAgentsByCommand(agents: ScoredAgent[], command: string): ScoredAgent[] {
         switch (command.toLowerCase()) {
             case 'security':
-                return agents.filter(a => 
-                    a.agent.name.includes('vulnerability') || a.agent.name.includes('test')
+                return agents.filter(a =>
+                    a.agent.type === 'security' || a.agent.type === 'testing'
                 );
 
             case 'fix':
-                return agents.filter(a => 
-                    a.agent.name.includes('test') || a.agent.name.includes('sonarqube')
+                return agents.filter(a =>
+                    a.agent.type === 'testing' || a.agent.type === 'quality'
                 );
 
             case 'upgrade':
-                return agents.filter(a => 
-                    a.agent.name.includes('java') || 
-                    a.agent.name.includes('eclipse') || 
-                    a.agent.name.includes('webservice') || 
-                    a.agent.name.includes('os-compatibility') || 
-                    a.agent.name.includes('test')
+                return agents.filter(a =>
+                    a.agent.type === 'maintenance' || a.agent.type === 'compatibility' || a.agent.type === 'testing'
                 );
 
             case 'analyze':
@@ -172,7 +168,7 @@ export class OrchestratorAdapter {
 
         return `Based on your query about "${userQuery}", the maintenance system has selected ${agents.length} ` +
                `agent(s) to help: ${agentList}. The top recommendation is **${topAgent.name}** ` +
-               `with a ${(topAgent.score * 100).toFixed(1)}% match. These agents will analyze your code and ` +
+               `with a score of ${topAgent.score}/140. These agents will analyze your code and ` +
                `provide targeted recommendations for improvements.`;
     }
 

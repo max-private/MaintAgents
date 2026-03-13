@@ -104,7 +104,7 @@ export class PromptBuilder {
       const rank = i + 1;
 
       lines.push(`### ${rank}. ${scored.agent.name}`);
-      lines.push(`**Score:** ${scored.score.toFixed(0)}/150`);
+      lines.push(`**Score:** ${scored.score.toFixed(0)}/140`);
       lines.push(`**Agent ID:** \`${scored.agent.id}\``);
       lines.push(`**Risk Level:** ${this.formatRiskLevel(scored.agent.risk_level || 'unknown')}`);
       lines.push('');
@@ -242,7 +242,7 @@ export class PromptBuilder {
     for (let i = 0; i < selectedAgents.length; i++) {
       const score = selectedAgents[i];
       lines.push(`${i + 1}. \`${score.agent.id}\` - ${score.agent.name}`);
-      lines.push(`   - Relevance Score: ${score.score.toFixed(0)}/150`);
+      lines.push(`   - Relevance Score: ${score.score.toFixed(0)}/140`);
     }
 
     lines.push('');
