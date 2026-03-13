@@ -1,4 +1,4 @@
-﻿name: Test Fix Maintenance Agent
+name: Test Fix Maintenance Agent
 capabilities:
   - test-failure-analysis
   - flaky-test-detection
@@ -6,6 +6,8 @@ capabilities:
   - testing-framework-upgrade
   - test-environment-management
   - test-report-generation
+  - dotnet-test-framework-upgrade
+  - dotnet-coverage-integration
 supported_tools:
   - JUnit 4/5
   - Mockito
@@ -15,6 +17,15 @@ supported_tools:
   - Cucumber
   - Selenium WebDriver
   - Archunit
+  - xUnit
+  - NUnit
+  - MSTest
+  - Moq
+  - NSubstitute
+  - FakeItEasy
+  - coverlet
+  - dotnet test
+  - ReportGenerator
 test_types:
   - unit-tests
   - integration-tests
@@ -32,5 +43,10 @@ trigger_events:
   - flaky-test
   - junit-failure
   - test-error
+  - xunit-failure
+  - nunit-failure
+  - mstest-failure
+  - dotnet-test-failure
+  - coverlet-issue
 risk_level: low
 estimated_execution_time: 15-60 minutes

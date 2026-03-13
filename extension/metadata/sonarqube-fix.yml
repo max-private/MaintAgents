@@ -1,4 +1,4 @@
-﻿name: SonarQube Fix Maintenance Agent
+name: SonarQube Fix Maintenance Agent
 capabilities:
   - code-smell-remediation
   - complexity-reduction
@@ -6,6 +6,8 @@ capabilities:
   - code-duplication-elimination
   - security-hotspot-fixing
   - quality-gate-compliance
+  - roslyn-analyzer-fixes
+  - dotnet-format-enforcement
 supported_tools:
   - SonarQube
   - SonarScanner
@@ -14,6 +16,11 @@ supported_tools:
   - SpotBugs
   - Jacoco
   - Mockito
+  - dotnet-sonarscanner
+  - Roslyn Analyzers
+  - StyleCop.Analyzers
+  - dotnet-format
+  - Microsoft.CodeAnalysis
 issue_categories:
   - code-smell
   - bug
@@ -30,5 +37,8 @@ trigger_events:
   - code-smell
   - quality-gate
   - sonar-issue
+  - roslyn-warning
+  - dotnet-sonarscanner
+  - analyzer-warning
 risk_level: medium
 estimated_execution_time: 20-75 minutes

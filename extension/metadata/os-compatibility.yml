@@ -1,4 +1,4 @@
-﻿name: OS Compatibility Maintenance Agent
+name: OS Compatibility Maintenance Agent
 capabilities:
   - windows-compatibility-fix
   - linux-compatibility-fix
@@ -6,6 +6,8 @@ capabilities:
   - native-library-management
   - system-path-handling
   - system-integration-update
+  - dotnet-pinvoke-management
+  - dotnet-cross-platform-fix
 supported_tools:
   - JNI
   - JNA
@@ -13,6 +15,10 @@ supported_tools:
   - Java NIO
   - OSHI
   - JCurses/Lanterna
+  - P/Invoke
+  - CsWin32
+  - System.Runtime.InteropServices
+  - Microsoft.Windows.CsWin32
 target_platforms:
   - windows-10
   - windows-11
@@ -33,5 +39,8 @@ trigger_events:
   - jni-library
   - native-library
   - windows-linux
+  - pinvoke-issue
+  - dotnet-os-compatibility
+  - interop-failure
 risk_level: high
 estimated_execution_time: 25-80 minutes
