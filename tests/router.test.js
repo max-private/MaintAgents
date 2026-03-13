@@ -17,13 +17,17 @@ describe('AgentRouter — query routing', () => {
   // ── Routing correctness ─────────────────────────────────────────────────
 
   test.each([
-    ['my JUnit tests are failing after Spring Boot upgrade',       'test-fix'],
-    ['security vulnerability CVE detected in dependencies',        'vulnerability-fix'],
-    ['upgrade from Java 8 to Java 17',                            'java-maintenance'],
-    ['SonarQube code smells and quality gate failures',           'sonarqube-fix'],
-    ['REST API migration from SOAP to Spring Boot microservice',  'webservice-maintenance'],
-    ['Windows path compatibility issue with native JNI libraries','os-compatibility'],
-    ['Eclipse RCP plugin Tycho OSGi bundle upgrade',              'eclipse-rcp'],
+    ['my JUnit tests are failing after Spring Boot upgrade',             'test-fix'],
+    ['security vulnerability CVE detected in dependencies',              'vulnerability-fix'],
+    ['upgrade from Java 8 to Java 17',                                  'java-maintenance'],
+    ['SonarQube code smells and quality gate failures',                 'sonarqube-fix'],
+    ['REST API migration from SOAP to Spring Boot microservice',        'webservice-maintenance'],
+    ['Windows path compatibility issue with native JNI libraries',      'os-compatibility'],
+    ['Eclipse RCP plugin Tycho OSGi bundle upgrade',                    'eclipse-rcp'],
+    ['migrate .NET Framework 4.8 project to .NET 8',                   'dotnet-maintenance'],
+    ['NuGet package outdated after dotnet upgrade to net8',             'dotnet-maintenance'],
+    ['ASP.NET Core migration from System.Web to minimal hosting model', 'dotnet-maintenance'],
+    ['dotnet csharp modernization nullable reference types and records', 'dotnet-maintenance'],
   ])('"%s" → top agent is %s', (query, expectedId) => {
     const results = router.selectAgentsForQuery(query, 3);
     expect(results.length).toBeGreaterThan(0);
@@ -33,7 +37,7 @@ describe('AgentRouter — query routing', () => {
   // ── Score caps & integrity ──────────────────────────────────────────────
 
   test('no agent score exceeds 140', () => {
-    const results = router.selectAgentsForQuery('java spring security sonarqube test vulnerability', 7);
+    const results = router.selectAgentsForQuery('java spring security sonarqube test vulnerability', 8);
     results.forEach(r => expect(r.score).toBeLessThanOrEqual(140));
   });
 
@@ -89,14 +93,14 @@ describe('AgentRouter — query routing', () => {
   // ── Sorting ─────────────────────────────────────────────────────────────
 
   test('results are sorted descending by score', () => {
-    const results = router.selectAgentsForQuery('java spring security test sonarqube', 7);
+    const results = router.selectAgentsForQuery('java spring security test sonarqube', 8);
     for (let i = 0; i < results.length - 1; i++) {
       expect(results[i].score).toBeGreaterThanOrEqual(results[i + 1].score);
     }
   });
 
   test('all returned scores are positive', () => {
-    const results = router.selectAgentsForQuery('java maven spring security', 7);
+    const results = router.selectAgentsForQuery('java maven spring security', 8);
     results.forEach(r => expect(r.score).toBeGreaterThan(0));
   });
 
@@ -150,6 +154,6 @@ describe('AgentRouter — query routing', () => {
   });
 
   test('getAgentsByRiskLevelPreference() returns all agents', () => {
-    expect(router.getAgentsByRiskLevelPreference().length).toBe(7);
+    expect(router.getAgentsByRiskLevelPreference().length).toBe(8);
   });
 });

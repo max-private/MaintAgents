@@ -1,0 +1,42 @@
+name: .NET Maintenance Agent
+version: 1.0.0
+language: csharp
+capabilities:
+  - dotnet-version-upgrade
+  - nuget-dependency-management
+  - aspnet-core-migration
+  - csharp-modernization
+  - ef-core-upgrade
+  - msbuild-optimization
+  - net-framework-migration
+supported_tools:
+  - .NET CLI
+  - NuGet
+  - MSBuild
+  - Visual Studio
+  - JetBrains Rider
+  - dotnet-outdated
+  - dotnet-sonarscanner
+target_versions:
+  - net-framework-4.x
+  - netcoreapp3.1
+  - net5
+  - net6
+  - net7
+  - net8
+  - net9
+priority_areas:
+  - performance
+  - code-quality
+  - compatibility
+  - maintainability
+trigger_events:
+  - dotnet-upgrade
+  - dotnet-migration
+  - nuget-update
+  - csharp-upgrade
+  - aspnet-migration
+  - net-framework-migration
+  - net-core-migration
+risk_level: medium
+estimated_execution_time: 15-60 minutes

@@ -19,11 +19,11 @@ describe('AgentRegistry — loading & indexing', () => {
 
   test('calling initialize() twice is idempotent', async () => {
     await registry.initialize(); // second call — should not reload
-    expect(registry.getAgentCount()).toBe(7);
+    expect(registry.getAgentCount()).toBe(8);
   });
 
-  test('all 7 agents are loaded', () => {
-    expect(registry.getAgentCount()).toBe(7);
+  test('all 8 agents are loaded', () => {
+    expect(registry.getAgentCount()).toBe(8);
   });
 
   test.each([
@@ -34,6 +34,7 @@ describe('AgentRegistry — loading & indexing', () => {
     'webservice-maintenance',
     'os-compatibility',
     'eclipse-rcp',
+    'dotnet-maintenance',
   ])('agent "%s" is present', (id) => {
     expect(registry.hasAgent(id)).toBe(true);
   });
@@ -72,13 +73,14 @@ describe('AgentRegistry — loading & indexing', () => {
   // ── Type inference ──────────────────────────────────────────────────────
 
   test.each([
-    ['vulnerability-fix', 'security'],
-    ['test-fix',          'testing'],
-    ['sonarqube-fix',     'quality'],
-    ['os-compatibility',  'compatibility'],
-    ['java-maintenance',  'maintenance'],
-    ['eclipse-rcp',       'maintenance'],
+    ['vulnerability-fix',      'security'],
+    ['test-fix',               'testing'],
+    ['sonarqube-fix',          'quality'],
+    ['os-compatibility',       'compatibility'],
+    ['java-maintenance',       'maintenance'],
+    ['eclipse-rcp',            'maintenance'],
     ['webservice-maintenance', 'maintenance'],
+    ['dotnet-maintenance',     'maintenance'],
   ])('agent "%s" has inferred type "%s"', (id, expectedType) => {
     expect(registry.getAgent(id).type).toBe(expectedType);
   });

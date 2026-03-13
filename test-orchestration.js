@@ -41,7 +41,7 @@ async function runTests() {
   await registry.initialize();
 
   assert('Registry is ready after initialize()', registry.isReady());
-  assert('All 7 agents loaded', registry.getAgentCount() === 7,
+  assert('All 8 agents loaded', registry.getAgentCount() === 8,
          `got ${registry.getAgentCount()}`);
 
   const agents = registry.getAllAgents();
@@ -56,6 +56,7 @@ async function runTests() {
     'webservice-maintenance',
     'os-compatibility',
     'eclipse-rcp',
+    'dotnet-maintenance',
   ];
   for (const id of expectedIds) {
     assert(`Agent "${id}" present`, registry.hasAgent(id));
