@@ -82,7 +82,27 @@ async function installAgentModeFile(
         const destFile = path.join(agentsDir, 'maintenance.agent.md');
         fs.mkdirSync(agentsDir, { recursive: true });
         fs.writeFileSync(destFile, content, 'utf8');
+        ensureGitignored(folder.uri.fsPath, '.github/agents/maintenance.agent.md');
         console.log(`Maintenance Agents: installed agent mode file at ${destFile}`);
+    }
+}
+
+/**
+ * Appends the given pattern to the workspace .gitignore if not already present.
+ */
+function ensureGitignored(workspaceRoot: string, pattern: string): void {
+    const gitignorePath = path.join(workspaceRoot, '.gitignore');
+    try {
+        const existing = fs.existsSync(gitignorePath)
+            ? fs.readFileSync(gitignorePath, 'utf8')
+            : '';
+        if (!existing.split('\n').some(line => line.trim() === pattern)) {
+            const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n' : '';
+            fs.appendFileSync(gitignorePath, `${separator}${pattern}\n`, 'utf8');
+            console.log(`Maintenance Agents: added ${pattern} to .gitignore`);
+        }
+    } catch (err) {
+        console.warn(`Maintenance Agents: could not update .gitignore: ${err}`);
     }
 }
 
