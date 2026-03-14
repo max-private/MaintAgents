@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "Specialized maintenance agents for Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
@@ -400,8 +400,7 @@
   },
   "scripts": {
     "build": "npm run compile",
-    "compile": "tsc -p ./ && npm run bundle-mcp",
-    "bundle-mcp": "esbuild mcp-server/server.ts --bundle --platform=node --target=node20 --outfile=dist/extension/mcp-server/server.js --external:vscode",
+    "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "package": "vsce package"
   },
@@ -409,13 +408,11 @@
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.93.0",
     "@vscode/vsce": "^3.7.1",
-    "esbuild": "^0.27.4",
     "jest": "^30.3.0",
     "typescript": "^5.3.0",
     "vscode-test": "^1.6.1"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
     "js-yaml": "^4.1.0"
   }
 }

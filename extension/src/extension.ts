@@ -111,21 +111,44 @@ function ensureGitignored(workspaceRoot: string, pattern: string): void {
 }
 
 /**
+ * Returns the first python executable found in PATH ('python3' or 'python').
+ * Falls back to 'python3' if neither can be verified.
+ */
+function findPythonExecutable(): string {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { execSync } = require('child_process') as typeof import('child_process');
+    for (const cmd of ['python3', 'python']) {
+        try {
+            execSync(`${cmd} --version`, { stdio: 'pipe' });
+            return cmd;
+        } catch {
+            // not available — try next candidate
+        }
+    }
+    return 'python3';
+}
+
+/**
  * Writes .vscode/mcp.json to each workspace folder so VS Code starts the
- * bundled MCP server and exposes maintenance tools to Copilot's agent mode.
+ * Python MCP server and exposes maintenance tools to Copilot's agent mode.
+ *
+ * Prerequisites on the user's machine:
+ *   pip install mcp pyyaml
  */
 function installMcpConfig(context: vscode.ExtensionContext): void {
-    const serverScript = path.join(context.extensionPath, 'dist', 'extension', 'mcp-server', 'server.js');
+    const serverScript = path.join(context.extensionPath, 'mcp-server', 'server.py');
     if (!fs.existsSync(serverScript)) {
-        console.warn('Maintenance Agents: MCP server script not found, skipping mcp.json install');
+        console.warn('Maintenance Agents: Python MCP server script not found, skipping mcp.json install');
         return;
     }
+
+    const pythonCmd = findPythonExecutable();
 
     const mcpConfig = {
         servers: {
             'maintenance-agents': {
                 type: 'stdio',
-                command: 'node',
+                command: pythonCmd,
                 args: [serverScript, context.extensionPath],
             },
         },
