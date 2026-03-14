@@ -1,10 +1,9 @@
 # Source TypeScript — compiled output in dist/ is what runs
 src/
-mcp-server/
 tsconfig.json
 
-# node_modules — MCP server is bundled via esbuild into dist/mcp-server/server.js
-# js-yaml is kept because the orchestrator requires it at runtime
+# node_modules — js-yaml is kept because the orchestrator requires it at runtime
+# mcp-server is a Python script (server.py) and is included in the VSIX as-is
 node_modules/
 !node_modules/js-yaml
 !node_modules/js-yaml/**
