@@ -46,6 +46,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         // Maintenance agent appears in the "Set Agent" dropdown.
         await installAgentModeFile(context, toolNames);
 
+        // Write .vscode/mcp.json so Copilot's agent mode can call the
+        // maintenance agents as native MCP tools.
+        installMcpConfig(context);
+
         console.log('Maintenance Agents extension activated successfully');
     } catch (error) {
         console.error('Failed to activate Maintenance Agents extension:', error);
@@ -103,6 +107,37 @@ function ensureGitignored(workspaceRoot: string, pattern: string): void {
         }
     } catch (err) {
         console.warn(`Maintenance Agents: could not update .gitignore: ${err}`);
+    }
+}
+
+/**
+ * Writes .vscode/mcp.json to each workspace folder so VS Code starts the
+ * bundled MCP server and exposes maintenance tools to Copilot's agent mode.
+ */
+function installMcpConfig(context: vscode.ExtensionContext): void {
+    const serverScript = path.join(context.extensionPath, 'dist', 'extension', 'mcp-server', 'server.js');
+    if (!fs.existsSync(serverScript)) {
+        console.warn('Maintenance Agents: MCP server script not found, skipping mcp.json install');
+        return;
+    }
+
+    const mcpConfig = {
+        servers: {
+            'maintenance-agents': {
+                type: 'stdio',
+                command: 'node',
+                args: [serverScript, context.extensionPath],
+            },
+        },
+    };
+
+    for (const folder of vscode.workspace.workspaceFolders ?? []) {
+        const vscodeDir = path.join(folder.uri.fsPath, '.vscode');
+        const mcpFile  = path.join(vscodeDir, 'mcp.json');
+        fs.mkdirSync(vscodeDir, { recursive: true });
+        fs.writeFileSync(mcpFile, JSON.stringify(mcpConfig, null, 2), 'utf8');
+        ensureGitignored(folder.uri.fsPath, '.vscode/mcp.json');
+        console.log(`Maintenance Agents: installed MCP config at ${mcpFile}`);
     }
 }
 

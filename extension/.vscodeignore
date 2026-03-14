@@ -1,6 +1,10 @@
 # Source TypeScript — compiled output in dist/ is what runs
 src/
+mcp-server/
 tsconfig.json
+
+# node_modules — MCP server is bundled via esbuild into dist/mcp-server/server.js
+node_modules/
 
 # Test infrastructure
 **/*.test.js

@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "Specialized maintenance agents for Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
@@ -35,156 +35,337 @@
     "languageModelTools": [
       {
         "name": "maintenance_route",
-        "tags": ["maintenance", "orchestrator"],
+        "tags": [
+          "maintenance",
+          "orchestrator"
+        ],
         "displayName": "Maintenance Agent Router",
         "modelDescription": "Scores and selects the most relevant maintenance agents for any query using keyword and capability matching. Returns combined agent context. Use this when unsure which specific agent to call, or when the query spans multiple maintenance domains.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The maintenance query to route" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"], "description": "Optional command filter" }
+            "query": {
+              "type": "string",
+              "description": "The maintenance query to route"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ],
+              "description": "Optional command filter"
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_java",
-        "tags": ["maintenance", "java"],
+        "tags": [
+          "maintenance",
+          "java"
+        ],
         "displayName": "Java Maintenance Agent",
         "modelDescription": "Provides expert guidance for Java version upgrades (Java 8/11/17/21), Maven and Gradle dependency management, Spring Boot and Spring Framework updates, JEE modernization, and Java API compatibility. Call this when the user's question involves Java, JDK, Maven, Gradle, Spring, Hibernate, or JEE.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The Java maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The Java maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_dotnet",
-        "tags": ["maintenance", "dotnet"],
+        "tags": [
+          "maintenance",
+          "dotnet"
+        ],
         "displayName": ".NET Maintenance Agent",
         "modelDescription": "Provides expert guidance for .NET and C# upgrades, NuGet dependency management, .NET Framework to .NET Core or .NET 8 migrations, ASP.NET modernization, Entity Framework updates, and WPF/WinForms maintenance. Call this when the user's question involves C#, .NET, NuGet, ASP.NET, Entity Framework, or WPF.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The .NET maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The .NET maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_python",
-        "tags": ["maintenance", "python"],
+        "tags": [
+          "maintenance",
+          "python"
+        ],
         "displayName": "Python Maintenance Agent",
         "modelDescription": "Provides expert guidance for Python version upgrades, pip and poetry dependency management, Python 2 to 3 migration, type annotation adoption, Django/Flask/FastAPI upgrades, async modernization, and packaging improvements. Call this when the user's question involves Python, pip, Django, Flask, FastAPI, pytest, or Jupyter.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The Python maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The Python maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_perl",
-        "tags": ["maintenance", "perl"],
+        "tags": [
+          "maintenance",
+          "perl"
+        ],
         "displayName": "Perl Maintenance Agent",
         "modelDescription": "Provides expert guidance for Perl modernization, CPAN module updates, Perl 5 best practices, legacy CGI to modern framework migration, regex and string handling improvements, and Perl script maintenance. Call this when the user's question involves Perl, CPAN, CGI scripts, or legacy Perl code.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The Perl maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The Perl maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_eclipse_rcp",
-        "tags": ["maintenance", "eclipse"],
+        "tags": [
+          "maintenance",
+          "eclipse"
+        ],
         "displayName": "Eclipse RCP Maintenance Agent",
         "modelDescription": "Provides expert guidance for Eclipse RCP and plugin development, OSGi bundle management, Eclipse platform migrations, PDE tooling, SWT/JFace UI updates, and extension point compatibility. Call this when the user's question involves Eclipse plugins, RCP applications, OSGi, MANIFEST.MF, or Eclipse platform versions.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The Eclipse RCP maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The Eclipse RCP maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_webservice",
-        "tags": ["maintenance", "webservice", "api"],
+        "tags": [
+          "maintenance",
+          "webservice",
+          "api"
+        ],
         "displayName": "Web Service Maintenance Agent",
         "modelDescription": "Provides expert guidance for REST and SOAP API modernization, OpenAPI/Swagger updates, gRPC migrations, authentication upgrades (OAuth2, JWT, API keys), HTTP client library migrations, and microservice maintenance. Call this when the user's question involves REST APIs, SOAP, OpenAPI, OAuth2, JWT, or API gateway configurations.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The web service maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The web service maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_os_compat",
-        "tags": ["maintenance", "os", "compatibility"],
+        "tags": [
+          "maintenance",
+          "os",
+          "compatibility"
+        ],
         "displayName": "OS Compatibility Maintenance Agent",
         "modelDescription": "Provides expert guidance for cross-platform compatibility issues, path handling (Windows/Linux/macOS), system call compatibility, Docker and container compatibility, environment variable management, and CI/CD platform differences. Call this when the user's question involves cross-platform code, file paths, Docker, environment variables, or OS-specific behaviour.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The OS compatibility question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The OS compatibility question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_vulnerability",
-        "tags": ["maintenance", "security", "vulnerability"],
+        "tags": [
+          "maintenance",
+          "security",
+          "vulnerability"
+        ],
         "displayName": "Vulnerability Fix Agent",
         "modelDescription": "Provides expert guidance for CVE remediation, dependency vulnerability fixes, OWASP Top 10 mitigations (SQL injection, XSS, CSRF, etc.), secure coding pattern adoption, secrets management, and security audit findings. Call this when the user's question involves CVEs, security vulnerabilities, OWASP, dependency audits, or secure coding.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The vulnerability or security question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The vulnerability or security question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_test_fix",
-        "tags": ["maintenance", "testing"],
+        "tags": [
+          "maintenance",
+          "testing"
+        ],
         "displayName": "Test Fix Agent",
         "modelDescription": "Provides expert guidance for diagnosing and fixing flaky tests, upgrading test frameworks (JUnit 4 to 5, pytest upgrades, Mocha/Jest updates), improving test coverage, modernizing test patterns, and fixing test infrastructure issues. Call this when the user's question involves failing tests, flaky tests, JUnit, pytest, Mocha, Jest, or test coverage.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The test maintenance question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The test maintenance question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
         "name": "maintenance_sonarqube",
-        "tags": ["maintenance", "quality", "sonarqube"],
+        "tags": [
+          "maintenance",
+          "quality",
+          "sonarqube"
+        ],
         "displayName": "SonarQube Fix Agent",
         "modelDescription": "Provides expert guidance for resolving SonarQube issues, code smell remediation, technical debt reduction, cognitive complexity reduction, and static analysis finding fixes. Call this when the user's question involves SonarQube rules, code smells, technical debt, static analysis, or code quality metrics.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "The SonarQube or code quality question or task" },
-            "command": { "type": "string", "enum": ["fix", "analyze", "upgrade", "security"] }
+            "query": {
+              "type": "string",
+              "description": "The SonarQube or code quality question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       }
     ],
@@ -219,7 +400,8 @@
   },
   "scripts": {
     "build": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "tsc -p ./ && npm run bundle-mcp",
+    "bundle-mcp": "esbuild mcp-server/server.ts --bundle --platform=node --target=node20 --outfile=dist/extension/mcp-server/server.js --external:vscode",
     "watch": "tsc -watch -p ./",
     "package": "vsce package"
   },
@@ -227,11 +409,13 @@
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.93.0",
     "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.27.4",
     "jest": "^30.3.0",
     "typescript": "^5.3.0",
     "vscode-test": "^1.6.1"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "js-yaml": "^4.1.0"
   }
 }
