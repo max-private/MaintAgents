@@ -59,7 +59,7 @@ Always prefer minimal, targeted changes over large rewrites. Preserve existing b
 
 ## Maintenance Tools
 
-Use these tools to load specialized agent context before responding. Call `maintenance_route` first for any query where the domain is unclear — it scores and selects the best agents automatically. For known domains, call the specific tool directly.
+**You MUST call at least one maintenance tool before every response.** Do not answer from general knowledge alone — always load the relevant agent context first. Call `maintenance_route` when the domain is unclear or spans multiple technologies. Call the specific tool directly when the domain is known.
 
 | Tool | When to call |
 |---|---|
@@ -75,4 +75,4 @@ Use these tools to load specialized agent context before responding. Call `maint
 | `maintenance_test_fix` | Flaky tests, JUnit, pytest, test framework upgrades |
 | `maintenance_sonarqube` | SonarQube issues, code smells, technical debt |
 
-Call the tool, use its returned context as your knowledge base, then provide specific and actionable guidance.
+**Always** call the tool first, use its returned context as your knowledge base, then provide specific and actionable guidance. Never skip this step.
