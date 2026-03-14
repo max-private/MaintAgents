@@ -4,6 +4,7 @@ import * as path from 'path';
 import { MaintenanceAgentParticipant } from './copilot-participant';
 import { OrchestratorAdapter } from './orchestrator-adapter';
 import { SessionMemory } from './session-memory';
+import { registerAgentTools, agentIdToToolName } from './agent-tools';
 
 let orchestratorAdapter: OrchestratorAdapter;
 
@@ -25,6 +26,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         orchestratorAdapter = new OrchestratorAdapter(context.extensionPath);
         await orchestratorAdapter.initialize();
 
+        // Register each agent as an LM tool for native Set Agent mode support
+        const toolNames = registerAgentTools(orchestratorAdapter, context);
+
         // Create and register the chat participant
         const sessionMemory = new SessionMemory(context);
         const participant = new MaintenanceAgentParticipant(orchestratorAdapter, sessionMemory);
@@ -40,7 +44,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
         // Write the .agent.md file to each workspace folder so the
         // Maintenance agent appears in the "Set Agent" dropdown.
-        await installAgentModeFile(context);
+        await installAgentModeFile(context, toolNames);
 
         console.log('Maintenance Agents extension activated successfully');
     } catch (error) {
@@ -56,21 +60,29 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
  * Writes maintenance.agent.md to .github/agents/ in each workspace folder
  * so the agent appears in the VS Code "Set Agent" dropdown.
  */
-async function installAgentModeFile(context: vscode.ExtensionContext): Promise<void> {
+async function installAgentModeFile(
+    context: vscode.ExtensionContext,
+    toolNames: string[]
+): Promise<void> {
     const templatePath = path.join(context.extensionPath, 'chatmodes', 'maintenance.agent.md');
     if (!fs.existsSync(templatePath)) {
         return;
     }
+
+    const builtinTools = ['changes', 'codebase', 'editFiles', 'problems', 'runCommands', 'search', 'terminal'];
+    const allTools = [...builtinTools, ...toolNames];
+    const toolsLine = `tools: [${allTools.map(t => `'${t}'`).join(', ')}]`;
+
     const template = fs.readFileSync(templatePath, 'utf8');
+    // Replace the tools: line in the YAML frontmatter with the full merged list
+    const content = template.replace(/^tools:.*$/m, toolsLine);
 
     for (const folder of vscode.workspace.workspaceFolders ?? []) {
         const agentsDir = path.join(folder.uri.fsPath, '.github', 'agents');
         const destFile = path.join(agentsDir, 'maintenance.agent.md');
-        if (!fs.existsSync(destFile)) {
-            fs.mkdirSync(agentsDir, { recursive: true });
-            fs.writeFileSync(destFile, template, 'utf8');
-            console.log(`Maintenance Agents: created ${destFile}`);
-        }
+        fs.mkdirSync(agentsDir, { recursive: true });
+        fs.writeFileSync(destFile, content, 'utf8');
+        console.log(`Maintenance Agents: installed agent mode file at ${destFile}`);
     }
 }
 
