@@ -45,7 +45,7 @@ export class MaintenanceAgentParticipant {
         context: vscode.ChatContext,
         stream: vscode.ChatResponseStream,
         token: vscode.CancellationToken
-    ): Promise<void> {
+    ): Promise<vscode.ChatResult> {
         try {
             const userQuery = request.prompt;
             const command = this.extractCommand(request.command);
@@ -92,19 +92,19 @@ export class MaintenanceAgentParticipant {
             }
 
             // Step 5 — persist this query to session history
-            this.memory.save(
-                userQuery,
-                response.selectedAgents.map(a => a.name),
-                command
-            );
+            const selectedAgentNames = response.selectedAgents.map(a => a.name);
+            this.memory.save(userQuery, selectedAgentNames, command);
+
+            return { metadata: { agents: selectedAgentNames, command } };
 
         } catch (error) {
             // Step 5 — handle cancellation silently; surface unexpected errors
             if (error instanceof vscode.LanguageModelError) {
-                return;
+                return {};
             }
             const msg = error instanceof Error ? error.message : String(error);
             stream.markdown(`⚠️ Error processing your request: ${msg}`);
+            return { errorDetails: { message: msg } };
         }
     }
 
@@ -135,8 +135,14 @@ export class MaintenanceAgentParticipant {
     // -------------------------------------------------------------------------
 
     /**
-     * Appends the prior @maintenance conversation turns to the message array
-     * so the model can follow up on earlier answers.
+     * Appends the prior conversation turns to the message array so the model
+     * can follow up on earlier answers.
+     *
+     * For each assistant turn:
+     * - Strips the routing summary table (noise, not content)
+     * - Prepends an "[Agents: ...]" note from ChatResult.metadata so the LLM
+     *   knows which agents produced that answer
+     *
      * Capped at the last 10 turns to avoid token overflow.
      */
     private appendChatHistory(
@@ -149,15 +155,39 @@ export class MaintenanceAgentParticipant {
             if (turn instanceof vscode.ChatRequestTurn) {
                 messages.push(vscode.LanguageModelChatMessage.User(turn.prompt));
             } else if (turn instanceof vscode.ChatResponseTurn) {
-                const text = turn.response
+                const raw = turn.response
                     .filter(p => p instanceof vscode.ChatResponseMarkdownPart)
                     .map(p => (p as vscode.ChatResponseMarkdownPart).value.value)
                     .join('');
-                if (text.trim()) {
-                    messages.push(vscode.LanguageModelChatMessage.Assistant(text));
-                }
+
+                const content = this.stripRoutingSummary(raw).trim();
+                if (!content) continue;
+
+                // Surface which agents were active for this turn using the
+                // metadata stored in the ChatResult we returned previously.
+                const meta = turn.result?.metadata as { agents?: string[] } | undefined;
+                const agentNote = meta?.agents?.length
+                    ? `[Agents: ${meta.agents.join(', ')}]\n`
+                    : '';
+
+                messages.push(vscode.LanguageModelChatMessage.Assistant(agentNote + content));
             }
         }
+    }
+
+    /**
+     * Removes the routing summary block from an assistant turn before it is
+     * replayed as history — the table is UI decoration, not answer content.
+     *
+     * Strips the block that looks like:
+     *   **Routing — N agent(s) selected**
+     *   | Agent | Score |
+     *   |-------|-------|
+     *   | ...   | ...   |
+     *   ---
+     */
+    private stripRoutingSummary(text: string): string {
+        return text.replace(/\*\*Routing\s*—[^\n]*\n[\s\S]*?---\n\n?/, '');
     }
 
     // -------------------------------------------------------------------------

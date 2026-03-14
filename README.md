@@ -1,6 +1,6 @@
 # Maintenance Agents
 
-A VS Code extension that provides AI-powered, multi-agent assistance for **Java application maintenance and modernization**. Interact via `@maintenance` in VS Code Chat — the system intelligently routes your request to the most relevant specialized agent(s).
+A VS Code extension that provides AI-powered, multi-agent assistance for **Java, .NET, Python, Perl, and more**. Use it as a Copilot agent (selectable via **Set Agent**) or via `@maintenance` in VS Code Chat — the system intelligently routes your request to the most relevant specialized agent(s).
 
 ---
 
@@ -9,7 +9,10 @@ A VS Code extension that provides AI-powered, multi-agent assistance for **Java 
 | Agent | Domain | Risk |
 |-------|--------|------|
 | **Java Maintenance** | Java version upgrades (8→11→17→21), Spring Framework, Maven/Gradle | Medium |
-| **Test Fix** | JUnit/Mockito/TestNG failures, flaky tests, coverage optimization | Low |
+| **.NET Maintenance** | .NET Framework → .NET 8 migration, C# modernization, NuGet | Medium |
+| **Python Maintenance** | Python 2→3 migration, pip/Poetry/conda, async modernization | Medium |
+| **Perl Maintenance** | Perl modernization, CPAN dependency management, syntax updates | Medium |
+| **Test Fix** | JUnit/Mockito/TestNG/pytest/NUnit failures, flaky tests, coverage | Low |
 | **Vulnerability Fix** | CVE detection, OWASP/Snyk scanning, dependency patching | Critical |
 | **SonarQube Fix** | Code smells, quality gates, SpotBugs, complexity reduction | Medium |
 | **Web Service** | REST/SOAP migration, Spring Boot 3, microservice modernization | Medium |
@@ -21,22 +24,26 @@ A VS Code extension that provides AI-powered, multi-agent assistance for **Java 
 ## Architecture
 
 ```
-VS Code Chat (@maintenance)
-        │
-        ▼
-  copilot-participant.ts        ← chat participant handler
-        │
-        ▼
-  orchestrator-adapter.ts       ← bridges extension ↔ orchestration
-        │
-        ├── AgentRegistry       ← loads YAML + Markdown, builds indices
-        ├── AgentRouter         ← multi-factor scoring, selects top agents
-        └── PromptBuilder       ← constructs structured LLM prompt
-                │
-                ▼
-        metadata/*.yml          ← agent configuration (capabilities, tools, risk)
-        agents/*.md             ← agent skill documentation
+Copilot "Set Agent" picker  ──or──  VS Code Chat (@maintenance)
+                    │
+                    ▼
+      copilot-participant.ts        ← agent handler (ChatResult + metadata)
+                    │
+                    ▼
+      orchestrator-adapter.ts       ← bridges extension ↔ orchestration
+                    │
+                    ├── AgentRegistry       ← loads YAML + Markdown, builds indices
+                    ├── AgentRouter         ← multi-factor scoring, selects top agents
+                    └── PromptBuilder       ← constructs structured LLM prompt
+                                │
+                                ▼
+                        metadata/*.yml      ← agent config (capabilities, tools, risk)
+                        agents/*.md         ← agent skill documentation
 ```
+
+### Conversation History
+
+Each response returns a `ChatResult` with `metadata: { agents, command }`. On subsequent turns, `appendChatHistory` replays prior turns with the agents note (`[Agents: java-maintenance, ...]`) stripped of routing-table noise, giving the model clean, annotated context. Cross-session history (previous VS Code sessions) is separately persisted via `SessionMemory`.
 
 ### Routing Algorithm
 
@@ -57,7 +64,14 @@ The top 3 scoring agents are selected and assembled into a detailed LLM prompt.
 
 ## Usage
 
-### In VS Code Chat
+### Option 1 — Set Agent (Copilot agent mode)
+
+1. Open Copilot Chat (`Ctrl+Alt+I`)
+2. Click **Set Agent** → select **Maintenance Agents**
+3. Type your query directly — no `@maintenance` prefix needed
+4. Conversation history is retained for the full thread
+
+### Option 2 — @mention in Chat
 
 ```
 @maintenance my JUnit tests are failing after upgrading to Spring Boot 3
@@ -70,11 +84,11 @@ The top 3 scoring agents are selected and assembled into a detailed LLM prompt.
 
 | Command | Description |
 |---------|-------------|
-| `@maintenance` | General query — all agents considered |
-| `@maintenance /fix` | Fix code issues (test-fix + sonarqube agents) |
-| `@maintenance /analyze` | Analyse code for issues |
-| `@maintenance /upgrade` | Upgrade frameworks and Java versions |
-| `@maintenance /security` | Security vulnerability scanning |
+| _(none)_ | General query — all agents considered |
+| `/fix` | Fix code issues (test-fix + sonarqube agents) |
+| `/analyze` | Analyse code for issues (default) |
+| `/upgrade` | Upgrade frameworks and language versions |
+| `/security` | Security vulnerability scanning |
 
 ---
 
@@ -103,7 +117,7 @@ MaintenanceAgents/
 ### Prerequisites
 
 - Node.js 18+
-- VS Code 1.85+
+- VS Code 1.93+ with GitHub Copilot
 
 ### Install dependencies
 
@@ -132,7 +146,7 @@ Then package from the `extension/` directory:
 ```bash
 cd extension
 npm run build       # compile TypeScript first
-npm run package     # produces maintenance-agents-1.0.0.vsix
+npm run package     # produces maintenance-agents-1.4.0.vsix
 ```
 
 ### Install the packaged extension
@@ -140,7 +154,7 @@ npm run package     # produces maintenance-agents-1.0.0.vsix
 **Option 1 — Command line:**
 
 ```bash
-code --install-extension extension/maintenance-agents-1.0.0.vsix
+code --install-extension extension/maintenance-agents-1.4.0.vsix
 ```
 
 **Option 2 — VS Code UI:**
@@ -148,10 +162,10 @@ code --install-extension extension/maintenance-agents-1.0.0.vsix
 1. Open VS Code
 2. Go to Extensions (`Ctrl+Shift+X`)
 3. Click the `...` menu → **Install from VSIX...**
-4. Select `extension/maintenance-agents-1.0.0.vsix`
+4. Select `extension/maintenance-agents-1.4.0.vsix`
 5. Reload VS Code when prompted
 
-Once installed, open any chat panel and type `@maintenance` to start using the extension.
+Once installed, either select **Maintenance Agents** from the Copilot **Set Agent** picker, or type `@maintenance` in any chat panel.
 
 ### Run orchestration tests
 

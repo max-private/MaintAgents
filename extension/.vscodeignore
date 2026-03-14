@@ -1,0 +1,16 @@
+# Source TypeScript — compiled output in dist/ is what runs
+src/
+tsconfig.json
+
+# Test infrastructure
+**/*.test.js
+**/*.spec.js
+jest.config.*
+
+# Packaging artefacts — don't bundle old VSIXes inside the new one
+*.vsix
+
+# Dev tooling
+.vscode/
+.eslintrc*
+.prettierrc*

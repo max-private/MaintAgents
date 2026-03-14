@@ -29,8 +29,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
         const chatParticipant = vscode.chat.createChatParticipant(
             'maintenance',
-            async (request: vscode.ChatRequest, context: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<void> => {
-                await participant.handleRequest(request, context, stream, token);
+            async (request: vscode.ChatRequest, context: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<vscode.ChatResult> => {
+                return participant.handleRequest(request, context, stream, token);
             }
         );
 
