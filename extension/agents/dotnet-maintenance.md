@@ -79,6 +79,26 @@ The .NET Maintenance Agent provides automated assistance for keeping .NET codeba
 - Structured logging migration (Microsoft.Extensions.Logging)
 - Health check and observability enhancements
 
+## Command Behavior
+
+When invoked, respond with concrete output — not a description of what could be done.
+
+### `analyze`
+Scan the workspace. For each finding include:
+- File path and line number
+- The problematic code or project file snippet (before)
+- The corrected equivalent (after)
+- Why it fails or degrades under the target .NET version
+
+### `fix`
+Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.
+
+### `upgrade`
+Produce a numbered migration plan. Each step must include the exact `.csproj` / code change (diff or full replacement), any `dotnet` CLI command to run, and a verification step.
+
+### `security`
+For each vulnerability: show the vulnerable code or package reference, the CVE or advisory reference, the patched replacement, and any configuration changes required.
+
 ## Output Formats
 
 - Automated change proposals with diffs

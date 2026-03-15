@@ -78,6 +78,26 @@ The Python Maintenance Agent provides automated assistance for keeping Python co
 - Linting rule adoption with zero-warning target
 - Dependency tree pruning and vulnerability hardening
 
+## Command Behavior
+
+When invoked, respond with concrete output — not a description of what could be done.
+
+### `analyze`
+Scan the workspace. For each finding include:
+- File path and line number
+- The problematic code snippet (before)
+- The corrected equivalent (after)
+- Why it fails or is incompatible with the target Python version
+
+### `fix`
+Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.
+
+### `upgrade`
+Produce a numbered migration plan. Each step must include the exact file change (diff or full replacement), any `pip` / `poetry` / `uv` command to run, and a verification step.
+
+### `security`
+For each vulnerability: show the vulnerable code or `requirements` entry, the CVE or advisory reference, the patched replacement, and any configuration changes required.
+
 ## Output Formats
 
 - Automated change proposals with diffs

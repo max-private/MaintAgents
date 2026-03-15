@@ -116,6 +116,26 @@ The Test Fix Maintenance Agent provides automated assistance for test failure de
 - Test coverage gap reduction
 - Testing framework and dependency upgrades
 
+## Command Behavior
+
+When invoked, respond with concrete output — not a description of what could be done.
+
+### `analyze`
+Scan the workspace or interpret provided test output. For each issue include:
+- File path and line number of the failing or flaky test
+- The failing test code and the assertion or error
+- The corrected test code (after)
+- Root cause explanation
+
+### `fix`
+Produce unified diffs or complete replacement test code blocks for every changed file. Do not describe the fix — apply it.
+
+### `upgrade`
+Produce a numbered migration plan (e.g. JUnit 4 → 5). Each step must include the exact import and annotation changes (diff or full replacement), any build file changes, and a verification step.
+
+### `security`
+For each test that exposes a security gap: show the missing or incorrect assertion, the threat it should cover, and the corrected test with the security assertion added.
+
 ## Output Formats
 
 - Test failure analysis and diagnosis reports

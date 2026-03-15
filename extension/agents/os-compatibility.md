@@ -116,6 +116,26 @@ The OS Compatibility Maintenance Agent provides automated assistance for managin
 - Native library version upgrades
 - System integration modernization
 
+## Command Behavior
+
+When invoked, respond with concrete output — not a description of what could be done.
+
+### `analyze`
+Scan the workspace. For each finding include:
+- File path and line number
+- The problematic code snippet (before)
+- The portable corrected equivalent (after)
+- Which platform(s) it breaks on and why
+
+### `fix`
+Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.
+
+### `upgrade`
+Produce a numbered migration plan. Each step must include the exact file change (diff or full replacement), any build command to run, and a verification step per platform.
+
+### `security`
+For each vulnerability: show the vulnerable native call or path handling code, the CVE or advisory reference, the patched replacement, and any platform-specific configuration changes required.
+
 ## Output Formats
 
 - Cross-platform compatibility reports
