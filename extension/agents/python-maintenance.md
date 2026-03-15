@@ -83,15 +83,24 @@ The Python Maintenance Agent provides automated assistance for keeping Python co
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace. For each finding you MUST provide all four of the following -- a finding without code examples is incomplete:
-- **File and line** -- exact path and line number
-- **Before** -- the problematic code snippet copied from the file
-- **After** -- the corrected replacement with the fix applied
-- **Why** -- why it fails or degrades under the target Python version
+Scan the workspace. Group findings by fix pattern. For each group use EXACTLY this format:
 
-Do not use a table of file paths as a substitute for code examples -- every finding must have its own fenced Before/After code block pair.
-If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
+**`path/to/File.java:lineNumber`**
+```language
+// Before — copied from that file
+[exact lines from the file showing the problem]
+```
+```language
+// After
+[corrected replacement]
+```
+**Why:** [why it fails under the target Python version]
+**Also affects:** list any other files that share the identical fix
 
+The file path and line number MUST appear as the heading immediately above the Before code block — not as a separate bullet. The Before block MUST contain lines copied verbatim from that specific file, not a generic example.
+
+A group with no file-headed code block is incomplete. Do not show a table of file paths without an accompanying code block.
+If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end.
 ### `fix`
 For each file change you MUST produce a fenced Before/After code block -- do not describe what to change, show it:
 - **File** -- exact path to the file being changed
