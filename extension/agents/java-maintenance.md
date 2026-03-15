@@ -80,6 +80,9 @@ Scan the workspace. For each finding you MUST provide all four of the following 
 - **After** — the corrected replacement with the fix applied
 - **Why** — why it fails or degrades under the target Java version
 
+Do not use a table of file paths as a substitute for code examples -- every finding must have its own fenced Before/After code block pair.
+If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
+
 ### `fix`
 Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.
 

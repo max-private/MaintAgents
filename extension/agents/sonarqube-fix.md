@@ -136,6 +136,9 @@ Scan the workspace or interpret provided SonarQube findings. For each issue you 
 - **After** -- the corrected replacement with the fix applied
 - **Rule** -- SonarQube rule ID and why it fires
 
+Do not use a table of file paths as a substitute for code examples — every finding must have its own fenced Before/After code block pair.
+If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
+
 ### `fix`
 Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it. Include any `@SuppressWarnings` / `#pragma warning disable` only where a fix is genuinely not possible, with a documented reason.
 
