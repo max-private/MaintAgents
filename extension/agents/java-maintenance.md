@@ -101,6 +101,7 @@ Rules:
 - `lineNumber` MUST be the real line number obtained by reading the file — do not guess or omit it
 - The Before block MUST contain lines copied verbatim from that specific file at that line — not a rewritten or generic example
 - The After block MUST be a complete working replacement — for simple import swaps show the full import block; for class-level rewrites (e.g. Applet → JFrame) show the complete migrated class including all method signatures, constructor, and main() entry point
+- When migrating from AWT to Swing, replace ALL AWT components with Swing equivalents — leaving any AWT component in a Swing migration is incorrect: `Button` → `JButton`, `TextField` → `JTextField`, `TextArea` → `JTextArea`, `Label` → `JLabel`, `Checkbox` → `JCheckBox`, `List` → `JList`, `Choice` → `JComboBox`, `Panel` → `JPanel`, `Frame` → `JFrame`, `Dialog` → `JDialog`
 - A group with no file-linked code block is incomplete
 - Do not show a table of file paths without an accompanying code block
 - If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end
@@ -109,6 +110,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+- When the fix involves an AWT→Swing migration, replace ALL AWT components: `Button` → `JButton`, `TextField` → `JTextField`, `TextArea` → `JTextArea`, `Label` → `JLabel`, `Checkbox` → `JCheckBox`, `List` → `JList`, `Choice` → `JComboBox`, `Panel` → `JPanel`, `Frame` → `JFrame`, `Dialog` → `JDialog` — a mixed AWT/Swing file is not a valid fix
 
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent).
