@@ -12,14 +12,6 @@ extension/*.vsix
 *.js.map
 *.d.ts.map
 
-# Orchestrator compiled output (generated — run `npm run build` to rebuild)
-orchestrator/agent-registry.js
-orchestrator/agent-registry.d.ts
-orchestrator/prompt-builder.js
-orchestrator/prompt-builder.d.ts
-orchestrator/router.js
-orchestrator/router.d.ts
-
 # OS / editor
 .DS_Store
 Thumbs.db
@@ -27,4 +19,6 @@ Thumbs.db
 
 # VS Code personal settings (machine-specific, not shared)
 .vscode/
+
+# One-off scripts
 *.py
