@@ -130,11 +130,11 @@ The SonarQube Fix Maintenance Agent provides automated assistance for code quali
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace or interpret provided SonarQube findings. For each issue include:
-- File path and line number
-- The offending code snippet (before)
-- The corrected equivalent (after)
-- The SonarQube rule ID and why it fires
+Scan the workspace or interpret provided SonarQube findings. For each issue you MUST provide all four of the following -- a finding without code examples is incomplete:
+- **File and line** -- exact path and line number
+- **Before** -- the offending code snippet copied from the file
+- **After** -- the corrected replacement with the fix applied
+- **Rule** -- SonarQube rule ID and why it fires
 
 ### `fix`
 Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it. Include any `@SuppressWarnings` / `#pragma warning disable` only where a fix is genuinely not possible, with a documented reason.

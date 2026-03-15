@@ -74,11 +74,11 @@ The Java Maintenance Agent provides automated assistance for keeping Java codeba
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace. For each finding include:
-- File path and line number
-- The problematic code snippet (before)
-- The corrected equivalent (after)
-- Why it fails or degrades under the target Java version
+Scan the workspace. For each finding you MUST provide all four of the following — **a finding without code examples is incomplete**:
+- **File and line** — exact path and line number
+- **Before** — the problematic code snippet copied from the file
+- **After** — the corrected replacement with the fix applied
+- **Why** — why it fails or degrades under the target Java version
 
 ### `fix`
 Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.

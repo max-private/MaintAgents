@@ -121,11 +121,11 @@ The Test Fix Maintenance Agent provides automated assistance for test failure de
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace or interpret provided test output. For each issue include:
-- File path and line number of the failing or flaky test
-- The failing test code and the assertion or error
-- The corrected test code (after)
-- Root cause explanation
+Scan the workspace or interpret provided test output. For each issue you MUST provide all four of the following -- a finding without code examples is incomplete:
+- **File and line** -- exact path and line number of the failing or flaky test
+- **Before** -- the failing test code and the assertion or error, copied from the file
+- **After** -- the corrected test code with the fix applied
+- **Why** -- root cause explanation
 
 ### `fix`
 Produce unified diffs or complete replacement test code blocks for every changed file. Do not describe the fix — apply it.
