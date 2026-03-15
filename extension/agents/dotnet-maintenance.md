@@ -88,7 +88,6 @@ Scan the workspace. Group findings by fix pattern. For each group use EXACTLY th
 
 **`path/to/File.java:lineNumber`**
 ```language
-// Before — copied from that file
 [exact lines from the file showing the problem]
 ```
 ```language
