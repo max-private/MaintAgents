@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "Specialized maintenance agents for Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
@@ -321,6 +321,37 @@
             "query": {
               "type": "string",
               "description": "The SonarQube or code quality question or task"
+            },
+            "command": {
+              "type": "string",
+              "enum": [
+                "fix",
+                "analyze",
+                "upgrade",
+                "security"
+              ]
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "maintenance_autosar",
+        "tags": [
+          "maintenance",
+          "autosar",
+          "arxml"
+        ],
+        "displayName": "AUTOSAR Maintenance Agent",
+        "modelDescription": "Provides expert guidance for Classic AUTOSAR R4.x (R4.0–R4.4) ARXML schema migration, deprecated element replacement, namespace URI updates, BSW module configuration for ETAS RTA-BSW, SWC and port interface compatibility, data type migration, and Artop model validation. Call this when the user's question involves AUTOSAR, ARXML, ISOLAR-A, Artop, RTA-BSW, ECUC, SWC, or ECU configuration.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The AUTOSAR maintenance question or task"
             },
             "command": {
               "type": "string",

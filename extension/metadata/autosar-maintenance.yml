@@ -1,0 +1,40 @@
+name: AUTOSAR Maintenance Agent
+description: >
+  Expert guidance for Classic AUTOSAR R4.x (R4.0–R4.4) ARXML schema migration,
+  deprecated element replacement, namespace URI updates, BSW module configuration
+  (ETAS RTA-BSW), SWC/port interface compatibility, and Artop model validation.
+  Supports ETAS ISOLAR-A and Artop toolchain.
+version: 1.0.0
+capabilities:
+  - arxml-schema-migration
+  - deprecated-element-detection
+  - namespace-uri-update
+  - bsw-module-configuration
+  - swc-port-interface-compatibility
+  - data-type-migration
+  - artop-model-validation
+supported_tools:
+  - ETAS ISOLAR-A
+  - ETAS RTA-BSW
+  - Artop
+target_versions:
+  - autosar-r4.0
+  - autosar-r4.1
+  - autosar-r4.2
+  - autosar-r4.3
+  - autosar-r4.4
+priority_areas:
+  - schema-compliance
+  - cross-reference-integrity
+  - bsw-compatibility
+  - validation
+trigger_events:
+  - autosar
+  - arxml
+  - isolar
+  - artop
+  - rta-bsw
+  - ecuc
+  - swc
+risk_level: high
+estimated_execution_time: 30-120 minutes

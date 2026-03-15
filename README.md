@@ -18,6 +18,7 @@ A VS Code extension that provides AI-powered maintenance assistance for **Java, 
 | **Web Service** | REST/SOAP migration, Spring Boot 3, microservice modernization |
 | **OS Compatibility** | Windows/Linux compatibility, path handling, native libraries |
 | **Eclipse RCP** | OSGi bundles, Tycho builds, RCP version upgrades |
+| **AUTOSAR** | Classic R4.x ARXML schema migration, ETAS ISOLAR-A/RTA-BSW, Artop validation |
 
 ---
 
