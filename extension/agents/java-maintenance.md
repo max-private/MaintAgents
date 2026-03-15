@@ -83,9 +83,13 @@ When invoked, respond with concrete output — not a description of what could b
 Scan the workspace. Group findings by fix pattern. Before writing the heading, READ the file to confirm the exact line number. For each group use EXACTLY this format — no other heading format is accepted:
 
 [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
+
+**Before** — exact lines from the file at that line:
 ```language
 [exact lines from the file at that line number]
 ```
+
+**After** — complete working replacement:
 ```language
 [complete corrected replacement — not just the changed line]
 ```
@@ -105,6 +109,12 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+
+After applying all fixes, run the appropriate build command to verify the changes compile and tests pass:
+- Maven project: `mvn compile test`
+- Gradle project: `./gradlew build`
+- Plain Java / other: `javac FileName.java` or equivalent
+Report the command output. If it fails, diagnose and fix before declaring done.
 
 If you apply the edit directly to the file, you MUST still show the Before and After blocks in this response — the response code blocks are required regardless of whether the file was changed as a tool action.
 
