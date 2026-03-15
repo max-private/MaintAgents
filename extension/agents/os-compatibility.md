@@ -121,23 +121,25 @@ The OS Compatibility Maintenance Agent provides automated assistance for managin
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace. Group findings by fix pattern. For each group use EXACTLY this format:
+Scan the workspace. Group findings by fix pattern. Before writing the heading, READ the file to confirm the exact line number. For each group use EXACTLY this format — no other heading format is accepted:
 
-**`path/to/File.java:lineNumber`**
+[`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
 ```language
-[exact lines from the file showing the problem]
+[exact lines from the file at that line number]
 ```
 ```language
-// After
 [corrected replacement]
 ```
 **Why:** [why it fails under the target platform]
-**Also affects:** list any other files that share the identical fix
+**Also affects:** list any other files that share the identical fix (use the same link format for each)
 
-The file path and line number MUST appear as the heading immediately above the Before code block — not as a separate bullet. The Before block MUST contain lines copied verbatim from that specific file, not a generic example.
-
-A group with no file-headed code block is incomplete. Do not show a table of file paths without an accompanying code block.
-If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end.
+Rules:
+- The heading MUST be a markdown hyperlink in the format shown above — not bold filename, not plain text, not a separate bullet
+- `lineNumber` MUST be the real line number obtained by reading the file — do not guess or omit it
+- The Before block MUST contain lines copied verbatim from that file at that line — not a generic example
+- A group with no file-linked code block is incomplete
+- Do not show a table of file paths without an accompanying code block
+- If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end
 ### `fix`
 For each file change you MUST produce a fenced Before/After code block -- do not describe what to change, show it:
 - **File** -- exact path to the file being changed
