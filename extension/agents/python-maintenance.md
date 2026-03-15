@@ -83,11 +83,14 @@ The Python Maintenance Agent provides automated assistance for keeping Python co
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace. For each finding include:
-- File path and line number
-- The problematic code snippet (before)
-- The corrected equivalent (after)
-- Why it fails or is incompatible with the target Python version
+Scan the workspace. For each finding you MUST provide all four of the following -- a finding without code examples is incomplete:
+- **File and line** -- exact path and line number
+- **Before** -- the problematic code snippet copied from the file
+- **After** -- the corrected replacement with the fix applied
+- **Why** -- why it fails or degrades under the target Python version
+
+Do not use a table of file paths as a substitute for code examples -- every finding must have its own fenced Before/After code block pair.
+If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
 
 ### `fix`
 Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.

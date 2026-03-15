@@ -127,6 +127,9 @@ Scan the workspace or interpret provided test output. For each issue you MUST pr
 - **After** -- the corrected test code with the fix applied
 - **Why** -- root cause explanation
 
+Do not use a table of file paths as a substitute for code examples — every finding must have its own fenced Before/After code block pair.
+If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
+
 ### `fix`
 Produce unified diffs or complete replacement test code blocks for every changed file. Do not describe the fix — apply it.
 
