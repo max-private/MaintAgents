@@ -125,6 +125,26 @@ The SonarQube Fix Maintenance Agent provides automated assistance for code quali
 | Minor | Small issue with low impact | Address in planned refactoring |
 | Info | Informational observation | Tracked for improvement |
 
+## Command Behavior
+
+When invoked, respond with concrete output — not a description of what could be done.
+
+### `analyze`
+Scan the workspace or interpret provided SonarQube findings. For each issue include:
+- File path and line number
+- The offending code snippet (before)
+- The corrected equivalent (after)
+- The SonarQube rule ID and why it fires
+
+### `fix`
+Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it. Include any `@SuppressWarnings` / `#pragma warning disable` only where a fix is genuinely not possible, with a documented reason.
+
+### `upgrade`
+Produce a numbered remediation plan ordered by severity (Blocker → Critical → Major). Each step must include the exact code change and verification that the rule no longer fires.
+
+### `security`
+For each security hotspot or vulnerability rule: show the vulnerable code, the SonarQube rule ID and CWE/OWASP reference, the hardened replacement, and any configuration changes required.
+
 ## Output Formats
 
 - Code smell analysis and remediation guides

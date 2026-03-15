@@ -69,6 +69,26 @@ The Java Maintenance Agent provides automated assistance for keeping Java codeba
 - Performance optimization recommendations
 - Monitoring and observability enhancements
 
+## Command Behavior
+
+When invoked, respond with concrete output — not a description of what could be done.
+
+### `analyze`
+Scan the workspace. For each finding include:
+- File path and line number
+- The problematic code snippet (before)
+- The corrected equivalent (after)
+- Why it fails or degrades under the target Java version
+
+### `fix`
+Produce unified diffs or complete replacement code blocks for every changed file. Do not describe the fix — apply it.
+
+### `upgrade`
+Produce a numbered migration plan. Each step must include the exact file change (diff or full replacement), any Maven/Gradle command to run, and a verification step.
+
+### `security`
+For each vulnerability: show the vulnerable code, the CVE or JEP reference, the patched replacement, and any configuration changes required.
+
 ## Output Formats
 
 - Automated change proposals with diffs
