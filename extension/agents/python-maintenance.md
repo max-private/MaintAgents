@@ -90,15 +90,16 @@ Scan the workspace. Group findings by fix pattern. Before writing the heading, R
 [exact lines from the file at that line number]
 ```
 ```language
-[corrected replacement]
+[complete corrected replacement — not just the changed line]
 ```
 **Why:** [why it fails under the target Python version]
-**Also affects:** list any other files that share the identical fix (use the same link format for each)
+**Also affects:** [`path/to/OtherFile.java:line`](path/to/OtherFile.java#Lline) — one link per affected file, same format
 
 Rules:
-- The heading MUST be a markdown hyperlink in the format shown above — not bold filename, not plain text, not a separate bullet
+- The heading MUST be a markdown hyperlink `[...](...)` — NOT bold text, NOT plain filename, NOT a separate bullet. Example of non-compliant: `appletComs.java` or `**appletComs.java**`. Compliant: [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3)
 - `lineNumber` MUST be the real line number obtained by reading the file — do not guess or omit it
-- The Before block MUST contain lines copied verbatim from that file at that line — not a generic example
+- The Before block MUST contain lines copied verbatim from that specific file at that line — not a rewritten or generic example
+- The After block MUST be a complete working replacement — for simple import swaps show the full import block; for class-level rewrites (e.g. Applet → JFrame) show the complete migrated class including all method signatures, constructor, and main() entry point
 - A group with no file-linked code block is incomplete
 - Do not show a table of file paths without an accompanying code block
 - If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end
