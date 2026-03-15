@@ -83,14 +83,15 @@ The Perl Maintenance Agent provides automated assistance for keeping Perl codeba
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace. For each finding you MUST provide all four of the following -- a finding without code examples is incomplete:
-- **File and line** -- exact path and line number
-- **Before** -- the problematic code snippet copied from the file
-- **After** -- the corrected replacement with the fix applied
+Scan the workspace. Group findings by fix pattern. For each group you MUST provide:
+- **File** -- the real file path and line number the Before snippet was copied from
+- **Before** -- the exact lines from that file showing the problem
+- **After** -- the corrected replacement
 - **Why** -- why it fails or degrades under the target Perl version
+- **Also affects** -- list any other files that share the identical fix (no separate code block needed for these)
 
-Do not use a table of file paths as a substitute for code examples -- every finding must have its own fenced Before/After code block pair.
-If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
+A group without a Before/After code block is incomplete. Do not show a table of file paths with no accompanying code block.
+If there are more than 5 groups, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
 
 ### `fix`
 For each file change you MUST produce a fenced Before/After code block -- do not describe what to change, show it:
