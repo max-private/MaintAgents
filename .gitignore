@@ -20,5 +20,5 @@ Thumbs.db
 # VS Code personal settings (machine-specific, not shared)
 .vscode/
 
-# One-off scripts
-*.py
+# One-off scripts (root level only)
+/*.py
