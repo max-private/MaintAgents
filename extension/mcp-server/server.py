@@ -85,11 +85,24 @@ def load_agents() -> list[dict]:
 # Helpers
 # ---------------------------------------------------------------------------
 
-def read_agent_content(agent: dict) -> str:
+def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
     md_path: Path = agent["md_path"]
     md = md_path.read_text(encoding="utf-8") if md_path.exists() \
         else f"# {agent['name']}\n\nDocumentation not found."
-    return f"# {agent['name']}\n\n{md}"
+
+    task_lines = [
+        "---",
+        "## Active Task",
+        f"Query: {query}" if query else "",
+        f"Command: {command}" if command else "",
+        "",
+        "Follow the Core Skills and Output Formats defined above.",
+        "Apply the relevant skill(s) directly to the query.",
+        "Produce concrete output: code diffs, migration steps, or fix recommendations — not a summary of what could be done.",
+    ]
+    task_block = "\n".join(line for line in task_lines if line is not None)
+
+    return f"{md}\n\n{task_block}"
 
 
 def route_query(query: str, agents: list[dict], top_n: int = 3) -> list[dict]:
@@ -169,10 +182,12 @@ async def list_tools() -> list[types.Tool]:
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     query: str = arguments.get("query", "")
 
+    command: str = arguments.get("command", "")
+
     if name == "maintenance_route":
         matched  = route_query(query, AGENTS)
         selected = matched if matched else AGENTS[:3]
-        content  = "\n\n---\n\n".join(read_agent_content(a) for a in selected)
+        content  = "\n\n---\n\n".join(read_agent_content(a, query, command) for a in selected)
         summary  = f"Selected agents: {', '.join(a['name'] for a in selected)}"
         return [types.TextContent(type="text", text=f"{summary}\n\n{content}")]
 
@@ -180,7 +195,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     if not agent:
         return [types.TextContent(type="text", text=f"Unknown tool: {name}")]
 
-    return [types.TextContent(type="text", text=read_agent_content(agent))]
+    return [types.TextContent(type="text", text=read_agent_content(agent, query, command))]
 
 
 # ---------------------------------------------------------------------------
