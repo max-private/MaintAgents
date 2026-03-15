@@ -83,6 +83,12 @@ The Python Maintenance Agent provides automated assistance for keeping Python co
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
+> **HEADING FORMAT — MANDATORY:** Every group heading MUST be a markdown hyperlink:
+> [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
+> Non-compliant (WRONG): `appletComs.java` · `**Login.java**` · a plain bullet
+> Compliant (CORRECT): [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3)
+> A response that uses plain filenames as headings is incomplete and must be redone.
+
 Scan the workspace. Group findings by fix pattern. Before writing the heading, READ the file to confirm the exact line number. For each group use EXACTLY this format — no other heading format is accepted:
 
 [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
@@ -108,6 +114,8 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+
+If you apply the edit directly to the file, you MUST still show the Before and After blocks in this response — the response code blocks are required regardless of whether the file was changed as a tool action.
 
 Do not write prose explaining the change; the code block is the explanation.
 
