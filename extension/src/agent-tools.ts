@@ -10,6 +10,7 @@ export const AGENT_TOOL_MAP: Record<string, string> = {
     'vulnerability-fix':      'maintenance_vulnerability',
     'test-fix':               'maintenance_test_fix',
     'sonarqube-fix':          'maintenance_sonarqube',
+    'autosar-maintenance':    'maintenance_autosar',
 };
 
 export function getAllToolNames(): string[] {

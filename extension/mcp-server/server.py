@@ -51,6 +51,7 @@ AGENT_TOOL_MAP: dict[str, str] = {
     "vulnerability-fix":      "maintenance_vulnerability",
     "test-fix":               "maintenance_test_fix",
     "sonarqube-fix":          "maintenance_sonarqube",
+    "autosar-maintenance":    "maintenance_autosar",
 }
 
 # ---------------------------------------------------------------------------
@@ -209,7 +210,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="1.7.0",
+                server_version="2.0.2",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
