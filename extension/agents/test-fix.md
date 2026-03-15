@@ -131,13 +131,29 @@ Do not use a table of file paths as a substitute for code examples — every fin
 If there are more than 5 findings, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
 
 ### `fix`
-Produce unified diffs or complete replacement test code blocks for every changed file. Do not describe the fix — apply it.
+For each file change you MUST produce a fenced Before/After code block -- do not describe what to change, show it:
+- **File** -- exact path to the file being changed
+- **Before** -- the exact lines being replaced, copied from the file
+- **After** -- the replacement lines with the fix applied
+
+Do not write prose explaining the change; the code block is the explanation.
 
 ### `upgrade`
-Produce a numbered migration plan (e.g. JUnit 4 → 5). Each step must include the exact import and annotation changes (diff or full replacement), any build file changes, and a verification step.
+Produce a numbered migration plan. Each step MUST include all three of the following -- a step without a code block is incomplete:
+- **Change** -- the exact file edit shown as a fenced Before/After code block
+- **Command** -- the exact build tool / test runner command to run, if applicable
+- **Verify** -- the command or check that confirms the step succeeded
+
+Do not describe steps in prose without code.
 
 ### `security`
-For each test that exposes a security gap: show the missing or incorrect assertion, the threat it should cover, and the corrected test with the security assertion added.
+For each vulnerability you MUST provide all four of the following -- a finding without code is incomplete:
+- **Ref** -- threat reference or CVE and CVSS score where applicable
+- **Before** -- the vulnerable code copied from the file, with file path and line number
+- **After** -- the hardened replacement with the fix applied
+- **Config** -- any dependency, configuration, or environment changes required
+
+Do not list vulnerabilities without Before/After code blocks.
 
 ## Output Formats
 
