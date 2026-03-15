@@ -83,16 +83,24 @@ The Perl Maintenance Agent provides automated assistance for keeping Perl codeba
 When invoked, respond with concrete output — not a description of what could be done.
 
 ### `analyze`
-Scan the workspace. Group findings by fix pattern. For each group you MUST provide:
-- **File** -- the real file path and line number the Before snippet was copied from
-- **Before** -- the exact lines from that file showing the problem
-- **After** -- the corrected replacement
-- **Why** -- why it fails or degrades under the target Perl version
-- **Also affects** -- list any other files that share the identical fix (no separate code block needed for these)
+Scan the workspace. Group findings by fix pattern. For each group use EXACTLY this format:
 
-A group without a Before/After code block is incomplete. Do not show a table of file paths with no accompanying code block.
-If there are more than 5 groups, show the top 5 by severity with full code blocks; summarise the remainder in a brief list at the end.
+**`path/to/File.java:lineNumber`**
+```language
+// Before — copied from that file
+[exact lines from the file showing the problem]
+```
+```language
+// After
+[corrected replacement]
+```
+**Why:** [why it fails under the target Perl version]
+**Also affects:** list any other files that share the identical fix
 
+The file path and line number MUST appear as the heading immediately above the Before code block — not as a separate bullet. The Before block MUST contain lines copied verbatim from that specific file, not a generic example.
+
+A group with no file-headed code block is incomplete. Do not show a table of file paths without an accompanying code block.
+If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end.
 ### `fix`
 For each file change you MUST produce a fenced Before/After code block -- do not describe what to change, show it:
 - **File** -- exact path to the file being changed
