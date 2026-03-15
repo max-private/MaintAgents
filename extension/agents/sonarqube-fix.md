@@ -166,11 +166,11 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
 
-After applying all fixes, run the appropriate build command to verify the changes compile and tests pass:
-- Maven project: `mvn compile test`
-- Gradle project: `./gradlew build`
-- Plain Java / other: `javac FileName.java` or equivalent
-Report the command output. If it fails, diagnose and fix before declaring done.
+After applying all fixes, verify correctness in this order:
+1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent).
+2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
+3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
+Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
 
 If you apply the edit directly to the file, you MUST still show the Before and After blocks in this response — the response code blocks are required regardless of whether the file was changed as a tool action.
 
