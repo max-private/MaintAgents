@@ -1,55 +1,20 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { MaintenanceAgentParticipant } from './copilot-participant';
-import { OrchestratorAdapter } from './orchestrator-adapter';
-import { SessionMemory } from './session-memory';
-import { registerAgentTools, agentIdToToolName } from './agent-tools';
-
-let orchestratorAdapter: OrchestratorAdapter;
+import { getAllToolNames } from './agent-tools';
 
 /**
  * Activates the Maintenance Agents extension.
- * 
- * Initializes the orchestrator adapter and registers the chat participant
- * for handling maintenance agent requests.
- * 
- * @param context The extension context
+ *
+ * Installs the agent mode file and MCP server config into each workspace
+ * folder so Copilot's agent mode can call the maintenance tools.
  */
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
     console.log('Maintenance Agents extension activating...');
-
     try {
-        // Initialize the orchestrator adapter
-        // context.extensionPath is the root of the installed extension,
-        // where metadata/ and agents/ are bundled alongside the source.
-        orchestratorAdapter = new OrchestratorAdapter(context.extensionPath);
-        await orchestratorAdapter.initialize();
-
-        // Register each agent as an LM tool for native Set Agent mode support
-        const toolNames = registerAgentTools(orchestratorAdapter, context);
-
-        // Create and register the chat participant
-        const sessionMemory = new SessionMemory(context);
-        const participant = new MaintenanceAgentParticipant(orchestratorAdapter, sessionMemory);
-
-        const chatParticipant = vscode.chat.createChatParticipant(
-            'MaintenanceAgents.maintenance',
-            async (request: vscode.ChatRequest, context: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<vscode.ChatResult> => {
-                return participant.handleRequest(request, context, stream, token);
-            }
-        );
-
-        context.subscriptions.push(chatParticipant);
-
-        // Write the .agent.md file to each workspace folder so the
-        // Maintenance agent appears in the "Set Agent" dropdown.
+        const toolNames = getAllToolNames();
         await installAgentModeFile(context, toolNames);
-
-        // Write .vscode/mcp.json so Copilot's agent mode can call the
-        // maintenance agents as native MCP tools.
         installMcpConfig(context);
-
         console.log('Maintenance Agents extension activated successfully');
     } catch (error) {
         console.error('Failed to activate Maintenance Agents extension:', error);
@@ -78,7 +43,6 @@ async function installAgentModeFile(
     const toolsLine = `tools: [${allTools.map(t => `'${t}'`).join(', ')}]`;
 
     const template = fs.readFileSync(templatePath, 'utf8');
-    // Replace the tools: line in the YAML frontmatter with the full merged list
     const content = template.replace(/^tools:.*$/m, toolsLine);
 
     for (const folder of vscode.workspace.workspaceFolders ?? []) {
@@ -103,7 +67,6 @@ function ensureGitignored(workspaceRoot: string, pattern: string): void {
         if (!existing.split('\n').some(line => line.trim() === pattern)) {
             const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n' : '';
             fs.appendFileSync(gitignorePath, `${separator}${pattern}\n`, 'utf8');
-            console.log(`Maintenance Agents: added ${pattern} to .gitignore`);
         }
     } catch (err) {
         console.warn(`Maintenance Agents: could not update .gitignore: ${err}`);
@@ -169,5 +132,4 @@ function installMcpConfig(context: vscode.ExtensionContext): void {
  */
 export function deactivate(): void {
     console.log('Maintenance Agents extension deactivating...');
-    orchestratorAdapter = undefined as any;
 }

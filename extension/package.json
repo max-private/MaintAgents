@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "Specialized maintenance agents for Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "1.9.3",
+  "version": "2.0.0",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
@@ -33,37 +33,6 @@
   ],
   "contributes": {
     "languageModelTools": [
-      {
-        "name": "maintenance_route",
-        "tags": [
-          "maintenance",
-          "orchestrator"
-        ],
-        "displayName": "Maintenance Agent Router",
-        "modelDescription": "Scores and selects the most relevant maintenance agents for any query using keyword and capability matching. Returns combined agent context. Use this when unsure which specific agent to call, or when the query spans multiple maintenance domains.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The maintenance query to route"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ],
-              "description": "Optional command filter"
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      },
       {
         "name": "maintenance_java",
         "tags": [
@@ -367,34 +336,6 @@
             "query"
           ]
         }
-      }
-    ],
-    "chatParticipants": [
-      {
-        "id": "MaintenanceAgents.maintenance",
-        "name": "maintenance",
-        "fullName": "Maintenance Agents",
-        "description": "Specialized agents for Java, .NET, Python, and Perl maintenance, Eclipse RCP, web services, OS compatibility, vulnerability fixes, test fixes, and code quality",
-        "isAgent": true,
-        "isSticky": true,
-        "commands": [
-          {
-            "name": "fix",
-            "description": "Fix code issues and bugs"
-          },
-          {
-            "name": "analyze",
-            "description": "Analyze code for issues"
-          },
-          {
-            "name": "upgrade",
-            "description": "Upgrade code to newer versions"
-          },
-          {
-            "name": "security",
-            "description": "Check for security vulnerabilities"
-          }
-        ]
       }
     ]
   },

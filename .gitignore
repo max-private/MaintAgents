@@ -27,3 +27,4 @@ Thumbs.db
 
 # VS Code personal settings (machine-specific, not shared)
 .vscode/
+*.py
