@@ -90,7 +90,6 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **After** -- the replacement lines with the fix applied
 
 Do not write prose explaining the change; the code block is the explanation.
-If fixing more than 5 files, apply the highest-severity fixes first and list the remaining filenames without code at the end.
 
 ### `upgrade`
 Produce a numbered migration plan. Each step MUST include all three of the following -- a step without a code block is incomplete:
