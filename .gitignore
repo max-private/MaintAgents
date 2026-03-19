@@ -24,3 +24,5 @@ Thumbs.db
 /*.py
 .github/agents/maintenance.agent.md
 .vscode/mcp.json
+*.pyc
+__pycache__/
