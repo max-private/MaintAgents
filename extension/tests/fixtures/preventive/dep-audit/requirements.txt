@@ -1,0 +1,8 @@
+# Python project with known vulnerable dependencies
+Django==3.2.19
+Pillow==9.0.0         # CVE-2023-44271: uncontrolled resource consumption
+requests==2.27.1      # CVE-2023-32681: proxy header leak
+PyYAML==5.3.1         # CVE-2020-14343: arbitrary code execution via yaml.load
+cryptography==36.0.0  # CVE-2023-49083
+flask==2.0.3
+sqlalchemy==1.4.0
