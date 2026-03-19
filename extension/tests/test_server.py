@@ -474,3 +474,87 @@ class TestParseMarkdown:
         # "go" and "up" are ≤2 chars (well, "go" is 2, "up" is 2)
         assert "go" not in kw
         assert "up" not in kw
+
+
+# ---------------------------------------------------------------------------
+# 7. Chatmode / agent-tools consistency
+#    Catches the v3.0.0 bug where agent-tools.ts still listed old tool names
+#    while package.json and the MCP server used the new ISO 14764 names.
+# ---------------------------------------------------------------------------
+
+EXPECTED_TOOL_NAMES = {
+    "maintenance_corrective",
+    "maintenance_adaptive",
+    "maintenance_perfective",
+    "maintenance_preventive",
+    "maintenance_route",
+}
+
+
+class TestChatmodeConsistency:
+
+    def _chatmode_tool_names(self) -> set[str]:
+        """Parse the tools: [...] frontmatter line from the chatmode template."""
+        chatmode = EXTENSION_DIR / "chatmodes" / "maintenance.agent.md"
+        for line in chatmode.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("tools:"):
+                # extract quoted names: 'foo', 'bar', ...
+                import re
+                return set(re.findall(r"'([^']+)'", line))
+        return set()
+
+    def _package_json_tool_names(self) -> set[str]:
+        import json
+        pkg = json.loads((EXTENSION_DIR / "package.json").read_text(encoding="utf-8"))
+        return {t["name"] for t in pkg.get("contributes", {}).get("languageModelTools", [])}
+
+    def _agent_tools_ts_names(self) -> set[str]:
+        """Parse the TOOL_NAMES array from agent-tools.ts without running tsc."""
+        import re
+        ts = (EXTENSION_DIR / "src" / "agent-tools.ts").read_text(encoding="utf-8")
+        return set(re.findall(r"'(maintenance_[^']+)'", ts))
+
+    def test_chatmode_includes_all_mcp_tool_names(self):
+        """Every MCP tool name must appear in the chatmode tools: frontmatter."""
+        chatmode_tools = self._chatmode_tool_names()
+        for name in EXPECTED_TOOL_NAMES:
+            assert name in chatmode_tools, (
+                f"'{name}' missing from chatmodes/maintenance.agent.md tools: line — "
+                "Copilot will not be able to call it"
+            )
+
+    def test_package_json_declares_all_mcp_tool_names(self):
+        """package.json languageModelTools must declare every expected tool."""
+        pkg_tools = self._package_json_tool_names()
+        assert pkg_tools == EXPECTED_TOOL_NAMES, (
+            f"package.json tool mismatch.\n"
+            f"  expected: {sorted(EXPECTED_TOOL_NAMES)}\n"
+            f"  actual:   {sorted(pkg_tools)}"
+        )
+
+    def test_agent_tools_ts_matches_expected(self):
+        """agent-tools.ts TOOL_NAMES must match the canonical set.
+
+        This is the test that would have caught the v3.0.0 bug: agent-tools.ts
+        still exported the 11 old names while package.json had the 5 new ones.
+        """
+        ts_names = self._agent_tools_ts_names()
+        assert ts_names == EXPECTED_TOOL_NAMES, (
+            f"agent-tools.ts TOOL_NAMES out of sync with expected tool names.\n"
+            f"  expected: {sorted(EXPECTED_TOOL_NAMES)}\n"
+            f"  actual:   {sorted(ts_names)}\n"
+            "installAgentModeFile() uses getAllToolNames() to write the chatmode — "
+            "a mismatch here means Copilot will not see the correct tools."
+        )
+
+    def test_mcp_server_exposes_same_tool_names(self, srv):
+        """MCP server list_tools() must return exactly the expected tool names."""
+        import asyncio
+        tools = asyncio.run(srv.list_tools())
+        server_names = {t.name for t in tools}
+        assert server_names == EXPECTED_TOOL_NAMES, (
+            f"MCP server tools out of sync.\n"
+            f"  expected: {sorted(EXPECTED_TOOL_NAMES)}\n"
+            f"  actual:   {sorted(server_names)}"
+        )
