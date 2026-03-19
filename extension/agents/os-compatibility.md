@@ -158,7 +158,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **After** -- the replacement lines with the fix applied
 
 After applying all fixes, verify correctness in this order:
-1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent).
+1. **Find the build tool**: detect by project type — `pom.xml` / `build.gradle` → run `mvn test` / `./gradlew test`; `package.json` → run `npm test` or `yarn test`; `*.csproj` / `*.sln` → run `dotnet build && dotnet test`; `pyproject.toml` / `requirements.txt` → run `pytest`; `Makefile.PL` / `Build.PL` → run `make test` / `./Build test`; no build file → run the changed file directly using the language runtime.
 2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
