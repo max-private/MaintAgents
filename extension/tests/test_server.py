@@ -65,7 +65,7 @@ class TestAgentLoading:
 
     def test_corrective_domains(self, srv):
         domains = {a["domain"] for a in srv.AGENTS if a["type"] == "corrective"}
-        assert domains == {"test-fix", "vulnerability-cve", "sonarqube-bugs"}
+        assert domains == {"test-fix", "vulnerability-cve", "sonarqube-bugs", "bug-report"}
 
     def test_adaptive_domains(self, srv):
         domains = {a["domain"] for a in srv.AGENTS if a["type"] == "adaptive"}
@@ -404,7 +404,7 @@ class TestListTools:
         tools = self._run(srv.list_tools())
         corrective = next(t for t in tools if t.name == "maintenance_corrective")
         domains = corrective.inputSchema["properties"]["domain"]["enum"]
-        assert set(domains) == {"test-fix", "vulnerability-cve", "sonarqube-bugs"}
+        assert set(domains) == {"test-fix", "vulnerability-cve", "sonarqube-bugs", "bug-report"}
 
     def test_adaptive_domain_enum(self, srv):
         tools = self._run(srv.list_tools())
@@ -557,4 +557,111 @@ class TestChatmodeConsistency:
             f"MCP server tools out of sync.\n"
             f"  expected: {sorted(EXPECTED_TOOL_NAMES)}\n"
             f"  actual:   {sorted(server_names)}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 8. Bug-report domain — agent loading, routing, and dispatch
+# ---------------------------------------------------------------------------
+
+
+class TestBugReportDomain:
+
+    # -- Agent loading --
+
+    def test_bug_report_agent_loaded(self, srv):
+        agent = next((a for a in srv.AGENTS if a["type"] == "corrective" and a["domain"] == "bug-report"), None)
+        assert agent is not None, "corrective/bug-report agent not loaded"
+
+    def test_corrective_domains_include_bug_report(self, srv):
+        domains = {a["domain"] for a in srv.AGENTS if a["type"] == "corrective"}
+        assert "bug-report" in domains
+
+    def test_bug_report_keywords_not_empty(self, srv):
+        agent = next(a for a in srv.AGENTS if a["type"] == "corrective" and a["domain"] == "bug-report")
+        assert len(agent["keywords"]) > 0
+
+    # -- Routing --
+
+    def test_route_stack_trace_query(self, srv):
+        results = srv.route_query("NullPointerException stack trace production crash", srv.AGENTS)
+        ids = [a["id"] for a in results]
+        assert "corrective/bug-report" in ids
+
+    def test_route_log_error_query(self, srv):
+        results = srv.route_query("log error exception production defect null", srv.AGENTS)
+        ids = [a["id"] for a in results]
+        assert "corrective/bug-report" in ids
+
+    def test_route_user_reported_bug(self, srv):
+        results = srv.route_query("user reported wrong calculation data corruption", srv.AGENTS)
+        ids = [a["id"] for a in results]
+        assert "corrective/bug-report" in ids
+
+    def test_route_concurrency_defect(self, srv):
+        results = srv.route_query("race condition deadlock concurrency heisenbug", srv.AGENTS)
+        ids = [a["id"] for a in results]
+        assert "corrective/bug-report" in ids
+
+    def test_route_hotfix_query(self, srv):
+        results = srv.route_query("production blocking hotfix rollback defect", srv.AGENTS)
+        ids = [a["id"] for a in results]
+        assert "corrective/bug-report" in ids
+
+    # -- call_tool dispatch --
+
+    def test_call_tool_bug_report_analyze(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_corrective",
+            {"query": "NPE in OrderService.calculateTotal line 52 — cart null for expired session",
+             "domain": "bug-report", "command": "analyze"}
+        ))
+        assert result
+        assert len(result[0].text) > 100
+
+    def test_call_tool_bug_report_plan(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_corrective",
+            {"query": "Plan fix for OrderService NPE on expired cart session — ticket 9821",
+             "domain": "bug-report", "command": "plan"}
+        ))
+        assert result
+        assert len(result[0].text) > 100
+
+    def test_call_tool_bug_report_corrective(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_corrective",
+            {"query": "Fix NPE in OrderService when CartRepository returns null",
+             "domain": "bug-report", "command": "corrective"}
+        ))
+        assert result
+        assert len(result[0].text) > 100
+
+    def test_call_tool_bug_report_content_has_active_task(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_corrective",
+            {"query": "trace the stack", "domain": "bug-report", "command": "analyze"}
+        ))
+        assert "Active Task" in result[0].text
+
+    # -- package.json domain enum --
+
+    def test_package_json_corrective_enum_includes_bug_report(self):
+        import json
+        pkg = json.loads((EXTENSION_DIR / "package.json").read_text(encoding="utf-8"))
+        corrective = next(
+            t for t in pkg["contributes"]["languageModelTools"]
+            if t["name"] == "maintenance_corrective"
+        )
+        domains = corrective["inputSchema"]["properties"]["domain"]["enum"]
+        assert "bug-report" in domains, (
+            "bug-report missing from maintenance_corrective domain enum in package.json"
+        )
+
+    # -- chatmode tool selection table --
+
+    def test_chatmode_mentions_bug_report(self):
+        chatmode = (EXTENSION_DIR / "chatmodes" / "maintenance.agent.md").read_text(encoding="utf-8")
+        assert "bug-report" in chatmode, (
+            "bug-report not mentioned in chatmodes/maintenance.agent.md tool selection table"
         )

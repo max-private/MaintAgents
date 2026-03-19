@@ -1,0 +1,18 @@
+2024-03-15 14:32:01.123 INFO  [http-nio-8080-exec-3] c.e.OrderController - Processing order id=9821 user=alice
+2024-03-15 14:32:01.145 INFO  [http-nio-8080-exec-3] c.e.CartRepository - Loading cart for session=e7f3a1
+2024-03-15 14:32:01.147 ERROR [http-nio-8080-exec-3] c.e.OrderService - Failed to process order
+java.lang.NullPointerException: Cannot invoke "com.example.Cart.getItems()" because "cart" is null
+	at com.example.OrderService.calculateTotal(OrderService.java:52)
+	at com.example.OrderService.processOrder(OrderService.java:34)
+	at com.example.OrderController.placeOrder(OrderController.java:78)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:897)
+2024-03-15 14:32:01.148 INFO  [http-nio-8080-exec-3] c.e.OrderController - Returning 500 for order id=9821
+2024-03-15 14:35:44.201 INFO  [http-nio-8080-exec-7] c.e.OrderController - Processing order id=9822 user=bob
+2024-03-15 14:35:44.203 INFO  [http-nio-8080-exec-7] c.e.CartRepository - Loading cart for session=a2c9f8
+2024-03-15 14:35:44.205 ERROR [http-nio-8080-exec-7] c.e.OrderService - Failed to process order
+java.lang.NullPointerException: Cannot invoke "com.example.Cart.getItems()" because "cart" is null
+	at com.example.OrderService.calculateTotal(OrderService.java:52)
+	at com.example.OrderService.processOrder(OrderService.java:34)
+	at com.example.OrderController.placeOrder(OrderController.java:78)
