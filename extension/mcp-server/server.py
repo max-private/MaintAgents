@@ -323,7 +323,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="3.0.0",
+                server_version="3.0.1",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
