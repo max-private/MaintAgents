@@ -112,7 +112,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **After** -- the replacement lines with the fix applied
 
 After applying all fixes, verify correctness in this order:
-1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent).
+1. **Find the build tool**: check the project tree for `pom.xml` with Tycho → run `mvn -Peclipse clean package`; standalone `MANIFEST.MF` / `plugin.xml` → build from Eclipse IDE or run `ant -f build.xml`; no build file → compile the plugin directly (e.g. `javac -cp eclipse_home/plugins/*.jar FileName.java`).
 2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.

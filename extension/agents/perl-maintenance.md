@@ -84,14 +84,14 @@ When invoked, respond with concrete output — not a description of what could b
 
 ### `analyze`
 > **HEADING FORMAT — MANDATORY:** Every group heading MUST be a markdown hyperlink:
-> [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
-> Non-compliant (WRONG): `appletComs.java` · `**Login.java**` · a plain bullet
-> Compliant (CORRECT): [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3)
+> [`path/to/Module.pm:lineNumber`](path/to/Module.pm#LlineNumber)
+> Non-compliant (WRONG): `MyModule.pm` · `**MyModule.pm**` · a plain bullet
+> Compliant (CORRECT): [`lib/MyModule.pm:8`](lib/MyModule.pm#L8)
 > A response that uses plain filenames as headings is incomplete and must be redone.
 
 Scan the workspace. Group findings by fix pattern. Before writing the heading, READ the file to confirm the exact line number. For each group use EXACTLY this format — no other heading format is accepted:
 
-[`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
+[`path/to/Module.pm:lineNumber`](path/to/Module.pm#LlineNumber)
 
 **Before** — exact lines from the file at that line:
 ```language
@@ -103,13 +103,13 @@ Scan the workspace. Group findings by fix pattern. Before writing the heading, R
 [complete corrected replacement — not just the changed line]
 ```
 **Why:** [why it fails under the target Perl version]
-**Also affects:** [`path/to/OtherFile.java:line`](path/to/OtherFile.java#Lline) — one link per affected file, same format
+**Also affects:** [`path/to/OtherModule.pm:line`](path/to/OtherModule.pm#Lline) — one link per affected file, same format
 
 Rules:
-- The heading MUST be a markdown hyperlink `[...](...)` — NOT bold text, NOT plain filename, NOT a separate bullet. Example of non-compliant: `appletComs.java` or `**appletComs.java**`. Compliant: [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3)
+- The heading MUST be a markdown hyperlink `[...](...)` — NOT bold text, NOT plain filename, NOT a separate bullet. Example of non-compliant: `MyModule.pm` or `**MyModule.pm**`. Compliant: [`lib/MyModule.pm:8`](lib/MyModule.pm#L8)
 - `lineNumber` MUST be the real line number obtained by reading the file — do not guess or omit it
 - The Before block MUST contain lines copied verbatim from that specific file at that line — not a rewritten or generic example
-- The After block MUST be a complete working replacement — for simple import swaps show the full import block; for class-level rewrites (e.g. Applet → JFrame) show the complete migrated class including all method signatures, constructor, and main() entry point
+- The After block MUST be a complete working replacement — for simple `use` swaps show the full module header; for OO rewrites (e.g. manual bless → Moo) show the complete migrated module including all attribute declarations, method signatures, and constructor
 - A group with no file-linked code block is incomplete
 - Do not show a table of file paths without an accompanying code block
 - If there are more than 5 groups, show the top 5 by severity; summarise the remainder in a brief list at the end
@@ -120,7 +120,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **After** -- the replacement lines with the fix applied
 
 After applying all fixes, verify correctness in this order:
-1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent).
+1. **Find the build tool**: check the project tree for `Makefile.PL` → run `perl Makefile.PL && make && make test`; `Build.PL` → run `perl Build.PL && ./Build && ./Build test`; `cpanfile` with Carton → run `carton install && carton exec prove -lr t/`; no build file → run the changed script directly (e.g. `perl script.pl` or `prove t/test.t`).
 2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
