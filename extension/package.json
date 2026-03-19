@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "ISO 14764 maintenance agents — Corrective, Adaptive, Perfective, and Preventive maintenance across Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, AUTOSAR, and code quality",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
@@ -42,7 +42,7 @@
           "type": "object",
           "properties": {
             "query": { "type": "string", "description": "The maintenance question or task" },
-            "domain": { "type": "string", "enum": ["test-fix", "vulnerability", "sonarqube-bugs"], "description": "The corrective maintenance domain" },
+            "domain": { "type": "string", "enum": ["test-fix", "vulnerability", "sonarqube-bugs", "bug-report"], "description": "The corrective maintenance domain" },
             "command": { "type": "string", "enum": ["analyze", "plan", "corrective", "validate"], "description": "analyze=workspace scan, plan=Phase 1 artifacts, corrective=Phase 2 execution, validate=Phase 3 verification" }
           },
           "required": ["query", "domain"]
