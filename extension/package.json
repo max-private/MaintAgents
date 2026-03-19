@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "Specialized maintenance agents for Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
