@@ -22,3 +22,7 @@ Thumbs.db
 
 # One-off scripts (root level only)
 /*.py
+.github/agents/maintenance.agent.md
+.vscode/mcp.json
+*.pyc
+__pycache__/

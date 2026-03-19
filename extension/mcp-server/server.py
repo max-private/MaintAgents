@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Maintenance Agents MCP Server — Python implementation
+Maintenance Agents MCP Server — v3.0.0
 
-Exposes each maintenance agent as an MCP tool so Copilot's agent mode
-can call them natively.  The extension path is passed as the first CLI
-argument so the server knows where to read agent Markdown files from.
+ISO 14764 process-oriented architecture. Exposes four type-level MCP tools
+(corrective, adaptive, perfective, preventive) each accepting a domain parameter,
+plus a router tool for unknown/multi-domain queries.
 
 Usage:
     python server.py <extensionPath>
@@ -17,6 +17,7 @@ import re
 import sys
 import asyncio
 from pathlib import Path
+from collections import defaultdict
 
 import mcp.types as types
 from mcp.server import Server, NotificationOptions
@@ -34,22 +35,22 @@ if len(sys.argv) < 2:
 EXTENSION_PATH = Path(sys.argv[1])
 AGENTS_DIR     = EXTENSION_PATH / "agents"
 
-# ---------------------------------------------------------------------------
-# Agent tool map  (agentId → toolName)
-# ---------------------------------------------------------------------------
+# ISO 14764 process type directories (excludes _process/ framework files)
+TYPE_DIRS = ["corrective", "adaptive", "perfective", "preventive"]
 
-AGENT_TOOL_MAP: dict[str, str] = {
-    "java-maintenance":       "maintenance_java",
-    "dotnet-maintenance":     "maintenance_dotnet",
-    "python-maintenance":     "maintenance_python",
-    "perl-maintenance":       "maintenance_perl",
-    "eclipse-rcp":            "maintenance_eclipse_rcp",
-    "webservice-maintenance": "maintenance_webservice",
-    "os-compatibility":       "maintenance_os_compat",
-    "vulnerability-fix":      "maintenance_vulnerability",
-    "test-fix":               "maintenance_test_fix",
-    "sonarqube-fix":          "maintenance_sonarqube",
-    "autosar-maintenance":    "maintenance_autosar",
+TYPE_TOOL_MAP: dict[str, str] = {
+    "corrective": "maintenance_corrective",
+    "adaptive":   "maintenance_adaptive",
+    "perfective": "maintenance_perfective",
+    "preventive": "maintenance_preventive",
+}
+
+# Commands available per type (analyze/plan/validate universal; execution cmd matches type name)
+TYPE_COMMANDS: dict[str, list[str]] = {
+    "corrective": ["analyze", "plan", "corrective", "validate"],
+    "adaptive":   ["analyze", "plan", "adaptive",   "validate"],
+    "perfective": ["analyze", "plan", "perfective", "validate"],
+    "preventive": ["analyze", "plan", "preventive", "validate"],
 }
 
 # Words too generic to distinguish agents from one another
@@ -62,10 +63,11 @@ _STOPWORDS = {
     "between", "across", "including", "using", "based", "common",
     "fix", "fixes", "update", "updates", "upgrade", "upgrades",
     "manage", "management", "support", "analysis", "migration",
+    "adaptive", "corrective", "perfective", "preventive",
 }
 
 # ---------------------------------------------------------------------------
-# Load agents from markdown files
+# Markdown parsing
 # ---------------------------------------------------------------------------
 
 def _parse_md(text: str, fallback_name: str) -> tuple[str, str, set[str]]:
@@ -80,24 +82,20 @@ def _parse_md(text: str, fallback_name: str) -> tuple[str, str, set[str]]:
     for line in lines:
         s = line.strip()
 
-        # Agent name from the top-level heading
         if s.startswith("# ") and name == fallback_name:
             name = s[2:].strip()
             continue
 
-        # Overview section boundaries
         if s == "## Overview":
             in_overview = True
             continue
         if s.startswith("## ") and in_overview:
             in_overview = False
 
-        # Capture first non-empty overview line for description
         if in_overview and s and not overview_text:
             overview_text = s
 
-        # Skill headings are the richest source of domain-specific terms.
-        # e.g. "### 3. Spring Boot / Quarkus Migration" → spring, boot, quarkus
+        # Skill headings are the richest source of domain-specific routing terms
         if s.startswith("### "):
             heading = re.sub(r"^###\s+\d+\.\s*", "", s)
             for w in re.split(r"[\W/]+", heading):
@@ -105,12 +103,10 @@ def _parse_md(text: str, fallback_name: str) -> tuple[str, str, set[str]]:
                 if len(w) > 2 and w not in _STOPWORDS:
                     keywords.add(w)
 
-    # Trim description to first sentence, max 200 chars
     if overview_text:
         first_sentence = re.split(r"\.\s", overview_text)[0]
         description = first_sentence[:200]
 
-    # Supplement keywords with significant words from the agent name/id
     for w in re.split(r"[\W\-]+", name.lower()):
         if len(w) > 2 and w not in _STOPWORDS:
             keywords.add(w)
@@ -118,26 +114,35 @@ def _parse_md(text: str, fallback_name: str) -> tuple[str, str, set[str]]:
     return name, description, keywords
 
 
+# ---------------------------------------------------------------------------
+# Agent loading
+# ---------------------------------------------------------------------------
+
 def load_agents() -> list[dict]:
     agents: list[dict] = []
     if not AGENTS_DIR.exists():
         return agents
-    for f in sorted(AGENTS_DIR.glob("*.md")):
-        agent_id = f.stem
-        tool_name = AGENT_TOOL_MAP.get(
-            agent_id,
-            f"maintenance_{agent_id.replace('-', '_')}",
-        )
-        text = f.read_text(encoding="utf-8")
-        name, description, keywords = _parse_md(text, agent_id)
-        agents.append({
-            "id":        agent_id,
-            "name":      name,
-            "description": description,
-            "keywords":  keywords,
-            "tool_name": tool_name,
-            "md_path":   f,
-        })
+
+    for type_name in TYPE_DIRS:
+        type_path = AGENTS_DIR / type_name
+        if not type_path.exists():
+            continue
+        for f in sorted(type_path.glob("*.md")):
+            domain = f.stem
+            tool_name = TYPE_TOOL_MAP[type_name]
+            text = f.read_text(encoding="utf-8")
+            name, description, keywords = _parse_md(text, domain)
+            agents.append({
+                "id":          f"{type_name}/{domain}",
+                "type":        type_name,
+                "domain":      domain,
+                "name":        name,
+                "description": description,
+                "keywords":    keywords,
+                "tool_name":   tool_name,
+                "md_path":     f,
+            })
+
     return agents
 
 
@@ -156,20 +161,18 @@ def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
         f"Query: {query}" if query else "",
         f"Command: {command}" if command else "",
         "",
-        "Follow the Core Skills and Output Formats defined above.",
-        "Apply the relevant skill(s) directly to the query.",
+        "Follow the process phases defined above.",
+        "Apply the relevant phase directly to the query.",
         "Produce concrete output: code diffs, migration steps, or fix recommendations — not a summary of what could be done.",
     ]
     task_block = "\n".join(line for line in task_lines if line is not None)
-
     return f"{md}\n\n{task_block}"
 
 
 def route_query(query: str, agents: list[dict], top_n: int = 3) -> list[dict]:
     """
     Whole-word keyword router. Splits the query into tokens and counts how many
-    of each agent's domain keywords appear as whole words — avoiding the
-    substring false-positives of the previous `kw in q` approach.
+    of each agent's domain keywords appear as whole words.
     """
     query_words = set(re.split(r"[\W/]+", query.lower())) - {""}
     scored: list[tuple[int, dict]] = []
@@ -193,33 +196,65 @@ server = Server("maintenance-agents")
 async def list_tools() -> list[types.Tool]:
     tools: list[types.Tool] = []
 
+    # Group agents by type to build domain enums
+    type_agent_map: dict[str, list[dict]] = defaultdict(list)
     for a in AGENTS:
-        tools.append(types.Tool(
-            name=a["tool_name"],
-            description=f"Maintenance agent: {a['name']}. {a['description']}",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "The maintenance question or task",
-                    },
-                    "command": {
-                        "type": "string",
-                        "enum": ["fix", "analyze", "upgrade", "security"],
-                        "description": "Optional command filter",
-                    },
+        type_agent_map[a["type"]].append(a)
+
+    for type_name, tool_name in TYPE_TOOL_MAP.items():
+        agents_of_type = type_agent_map.get(type_name, [])
+        domains = [a["domain"] for a in agents_of_type]
+        commands = TYPE_COMMANDS[type_name]
+
+        agent_summaries = "; ".join(
+            f"{a['domain']}: {a['description']}" for a in agents_of_type if a["description"]
+        )
+        model_desc = (
+            f"ISO 14764 {type_name.capitalize()} maintenance. "
+            f"Domains: {', '.join(domains)}. "
+            f"{agent_summaries}"
+        )
+
+        schema: dict = {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The maintenance question or task",
                 },
-                "required": ["query"],
+                "command": {
+                    "type": "string",
+                    "enum": commands,
+                    "description": (
+                        f"analyze=workspace scan, plan=Phase 1 artifacts, "
+                        f"{type_name}=Phase 2 execution, validate=Phase 3 verification"
+                    ),
+                },
             },
+            "required": ["query"],
+        }
+
+        if domains:
+            schema["properties"]["domain"] = {
+                "type": "string",
+                "enum": domains,
+                "description": f"The {type_name} maintenance domain",
+            }
+            schema["required"] = ["query", "domain"]
+
+        tools.append(types.Tool(
+            name=tool_name,
+            description=model_desc,
+            inputSchema=schema,
         ))
 
-    # Router tool — use when domain spans multiple technologies
+    # Router tool
     tools.append(types.Tool(
         name="maintenance_route",
         description=(
-            "Routes a maintenance query to the best matching agents and returns "
-            "combined context. Use when domain is unclear or spans multiple technologies."
+            "Routes a maintenance query to the best matching ISO 14764 agents. "
+            "Use when the maintenance type or domain is unclear, or spans multiple technologies. "
+            "Consult _process/00-decision-tree.md to classify the request first."
         ),
         inputSchema={
             "type": "object",
@@ -227,11 +262,6 @@ async def list_tools() -> list[types.Tool]:
                 "query": {
                     "type": "string",
                     "description": "The maintenance query to route",
-                },
-                "command": {
-                    "type": "string",
-                    "enum": ["fix", "analyze", "upgrade", "security"],
-                    "description": "Optional command filter",
                 },
             },
             "required": ["query"],
@@ -243,7 +273,8 @@ async def list_tools() -> list[types.Tool]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
-    query: str = arguments.get("query", "")
+    query: str   = arguments.get("query", "")
+    domain: str  = arguments.get("domain", "")
     command: str = arguments.get("command", "")
 
     if name == "maintenance_route":
@@ -253,17 +284,30 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 type="text",
                 text=(
                     "Could not determine the maintenance domain from the query. "
-                    "Please specify the technology stack (e.g. Java, .NET, Python, "
-                    "Perl, AUTOSAR) or call the relevant agent tool directly."
+                    "Consult _process/00-decision-tree.md to classify the request, "
+                    "or specify the technology stack and maintenance type explicitly "
+                    "(e.g. corrective/test-fix, adaptive/java, preventive/dependency-audit)."
                 ),
             )]
         content = "\n\n---\n\n".join(read_agent_content(a, query, command) for a in matched)
-        summary = f"Selected agents: {', '.join(a['name'] for a in matched)}"
+        summary = f"Selected agents: {', '.join(a['id'] for a in matched)}"
         return [types.TextContent(type="text", text=f"{summary}\n\n{content}")]
 
-    agent = next((a for a in AGENTS if a["tool_name"] == name), None)
+    # Type-level tool: find agent by (type, domain)
+    type_name = name.replace("maintenance_", "")
+    agent = next(
+        (a for a in AGENTS if a["type"] == type_name and a["domain"] == domain),
+        None,
+    )
     if not agent:
-        return [types.TextContent(type="text", text=f"Unknown tool: {name}")]
+        available = [a["domain"] for a in AGENTS if a["type"] == type_name]
+        return [types.TextContent(
+            type="text",
+            text=(
+                f"Unknown domain '{domain}' for tool '{name}'. "
+                f"Available domains: {', '.join(available) if available else 'none loaded'}."
+            ),
+        )]
 
     return [types.TextContent(type="text", text=read_agent_content(agent, query, command))]
 
@@ -279,7 +323,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="2.0.5",
+                server_version="3.0.1",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},

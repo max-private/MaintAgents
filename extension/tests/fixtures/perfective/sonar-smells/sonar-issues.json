@@ -1,0 +1,31 @@
+{
+  "issues": [
+    {
+      "rule": "java:S3776",
+      "severity": "CRITICAL",
+      "component": "com.example:ReportGenerator.java",
+      "line": 42,
+      "message": "Reduce the Cognitive Complexity of this method from 22 to the 15 allowed.",
+      "effort": "30min",
+      "type": "CODE_SMELL"
+    },
+    {
+      "rule": "java:S1192",
+      "severity": "MINOR",
+      "component": "com.example:InvoiceService.java",
+      "line": 15,
+      "message": "Define a constant instead of duplicating this literal \"INVOICE_PREFIX\" 4 times.",
+      "effort": "5min",
+      "type": "CODE_SMELL"
+    },
+    {
+      "rule": "java:S2095",
+      "severity": "BLOCKER",
+      "component": "com.example:FileProcessor.java",
+      "line": 88,
+      "message": "Use try-with-resources or close this 'FileInputStream' in a 'finally' clause.",
+      "effort": "10min",
+      "type": "BUG"
+    }
+  ]
+}

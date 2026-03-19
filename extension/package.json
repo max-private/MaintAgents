@@ -1,8 +1,8 @@
 {
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
-  "description": "Specialized maintenance agents for Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, security vulnerabilities, test fixes, and code quality",
-  "version": "2.0.5",
+  "description": "ISO 14764 maintenance agents — Corrective, Adaptive, Perfective, and Preventive maintenance across Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, AUTOSAR, and code quality",
+  "version": "3.0.1",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {
@@ -34,338 +34,76 @@
   "contributes": {
     "languageModelTools": [
       {
-        "name": "maintenance_java",
-        "tags": [
-          "maintenance",
-          "java"
-        ],
-        "displayName": "Java Maintenance Agent",
-        "modelDescription": "Provides expert guidance for Java version upgrades (Java 8/11/17/21), Maven and Gradle dependency management, Spring Boot and Spring Framework updates, JEE modernization, and Java API compatibility. Call this when the user's question involves Java, JDK, Maven, Gradle, Spring, Hibernate, or JEE.",
+        "name": "maintenance_corrective",
+        "tags": ["maintenance", "corrective", "iso14764"],
+        "displayName": "Corrective Maintenance Agent",
+        "modelDescription": "ISO 14764 Corrective Maintenance — fixes discovered faults. Use domain='test-fix' for failing or flaky tests (JUnit, pytest, xUnit, TAP); domain='vulnerability' for active CVEs and security exploits across Java/Maven, .NET/NuGet, Python/PyPI, Perl/CPAN; domain='sonarqube-bugs' for SonarQube bug-category and security-hotspot rule violations. Commands: analyze (workspace scan), plan (Phase 1 planning artifacts), corrective (Phase 2 fix execution), validate (Phase 3 build+test+coverage gate).",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": {
-              "type": "string",
-              "description": "The Java maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
+            "query": { "type": "string", "description": "The maintenance question or task" },
+            "domain": { "type": "string", "enum": ["test-fix", "vulnerability", "sonarqube-bugs"], "description": "The corrective maintenance domain" },
+            "command": { "type": "string", "enum": ["analyze", "plan", "corrective", "validate"], "description": "analyze=workspace scan, plan=Phase 1 artifacts, corrective=Phase 2 execution, validate=Phase 3 verification" }
           },
-          "required": [
-            "query"
-          ]
+          "required": ["query", "domain"]
         }
       },
       {
-        "name": "maintenance_dotnet",
-        "tags": [
-          "maintenance",
-          "dotnet"
-        ],
-        "displayName": ".NET Maintenance Agent",
-        "modelDescription": "Provides expert guidance for .NET and C# upgrades, NuGet dependency management, .NET Framework to .NET Core or .NET 8 migrations, ASP.NET modernization, Entity Framework updates, and WPF/WinForms maintenance. Call this when the user's question involves C#, .NET, NuGet, ASP.NET, Entity Framework, or WPF.",
+        "name": "maintenance_adaptive",
+        "tags": ["maintenance", "adaptive", "iso14764"],
+        "displayName": "Adaptive Maintenance Agent",
+        "modelDescription": "ISO 14764 Adaptive Maintenance — modifies software to work in a changed environment. Use domain='java' for JDK/Spring/Maven/Gradle version migration; domain='dotnet' for .NET/NuGet/ASP.NET/EF upgrades; domain='python' for Python/pip/poetry/Django/FastAPI updates; domain='perl' for Perl/CPAN/Moose modernization; domain='eclipse-rcp' for Eclipse platform/OSGi/Tycho migration; domain='webservice' for REST/SOAP/Spring Boot API framework updates; domain='os-compatibility' for cross-platform/JNI/P-Invoke/Docker adaptation; domain='autosar' for AUTOSAR R4.x ARXML schema migration. Commands: analyze, plan, adaptive, validate.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": {
-              "type": "string",
-              "description": "The .NET maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
+            "query": { "type": "string", "description": "The maintenance question or task" },
+            "domain": { "type": "string", "enum": ["java", "dotnet", "python", "perl", "eclipse-rcp", "webservice", "os-compatibility", "autosar"], "description": "The adaptive maintenance domain" },
+            "command": { "type": "string", "enum": ["analyze", "plan", "adaptive", "validate"], "description": "analyze=workspace scan, plan=Phase 1 artifacts, adaptive=Phase 2 execution, validate=Phase 3 verification" }
           },
-          "required": [
-            "query"
-          ]
+          "required": ["query", "domain"]
         }
       },
       {
-        "name": "maintenance_python",
-        "tags": [
-          "maintenance",
-          "python"
-        ],
-        "displayName": "Python Maintenance Agent",
-        "modelDescription": "Provides expert guidance for Python version upgrades, pip and poetry dependency management, Python 2 to 3 migration, type annotation adoption, Django/Flask/FastAPI upgrades, async modernization, and packaging improvements. Call this when the user's question involves Python, pip, Django, Flask, FastAPI, pytest, or Jupyter.",
+        "name": "maintenance_perfective",
+        "tags": ["maintenance", "perfective", "iso14764", "quality"],
+        "displayName": "Perfective Maintenance Agent",
+        "modelDescription": "ISO 14764 Perfective Maintenance — improves performance or maintainability without fixing a fault. Use domain='sonarqube-quality' for SonarQube code smell, complexity, duplication, and technical debt reduction (Java, .NET Roslyn, Python ruff/pylint, Perl Critic); domain='webservice-optimize' for REST microservice throughput, caching, design pattern improvements, and API contract quality. Commands: analyze, plan, perfective, validate.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": {
-              "type": "string",
-              "description": "The Python maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
+            "query": { "type": "string", "description": "The maintenance question or task" },
+            "domain": { "type": "string", "enum": ["sonarqube-quality", "webservice-optimize"], "description": "The perfective maintenance domain" },
+            "command": { "type": "string", "enum": ["analyze", "plan", "perfective", "validate"], "description": "analyze=workspace scan, plan=Phase 1 artifacts, perfective=Phase 2 execution, validate=Phase 3 verification" }
           },
-          "required": [
-            "query"
-          ]
+          "required": ["query", "domain"]
         }
       },
       {
-        "name": "maintenance_perl",
-        "tags": [
-          "maintenance",
-          "perl"
-        ],
-        "displayName": "Perl Maintenance Agent",
-        "modelDescription": "Provides expert guidance for Perl modernization, CPAN module updates, Perl 5 best practices, legacy CGI to modern framework migration, regex and string handling improvements, and Perl script maintenance. Call this when the user's question involves Perl, CPAN, CGI scripts, or legacy Perl code.",
+        "name": "maintenance_preventive",
+        "tags": ["maintenance", "preventive", "iso14764", "security"],
+        "displayName": "Preventive Maintenance Agent",
+        "modelDescription": "ISO 14764 Preventive Maintenance — detects and corrects latent faults before they manifest. Use domain='dependency-audit' for proactive scanning of Maven/Gradle/NuGet/PyPI/CPAN dependency trees for vulnerable, outdated, or abandoned packages; domain='vulnerability-scan' for SAST scanning, secret detection, OWASP/CWE compliance mapping, and security architecture review. Commands: analyze, plan, preventive, validate.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": {
-              "type": "string",
-              "description": "The Perl maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
+            "query": { "type": "string", "description": "The maintenance question or task" },
+            "domain": { "type": "string", "enum": ["dependency-audit", "vulnerability-scan"], "description": "The preventive maintenance domain" },
+            "command": { "type": "string", "enum": ["analyze", "plan", "preventive", "validate"], "description": "analyze=workspace scan, plan=Phase 1 artifacts, preventive=Phase 2 execution, validate=Phase 3 verification" }
           },
-          "required": [
-            "query"
-          ]
+          "required": ["query", "domain"]
         }
       },
       {
-        "name": "maintenance_eclipse_rcp",
-        "tags": [
-          "maintenance",
-          "eclipse"
-        ],
-        "displayName": "Eclipse RCP Maintenance Agent",
-        "modelDescription": "Provides expert guidance for Eclipse RCP and plugin development, OSGi bundle management, Eclipse platform migrations, PDE tooling, SWT/JFace UI updates, and extension point compatibility. Call this when the user's question involves Eclipse plugins, RCP applications, OSGi, MANIFEST.MF, or Eclipse platform versions.",
+        "name": "maintenance_route",
+        "tags": ["maintenance", "router", "iso14764"],
+        "displayName": "Maintenance Router",
+        "modelDescription": "Routes a maintenance query to the best matching ISO 14764 agent when the maintenance type or domain is unclear. Use this when you cannot determine whether the request is corrective, adaptive, perfective, or preventive, or when it spans multiple domains. The router uses keyword matching against all agent skill headings.",
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": {
-              "type": "string",
-              "description": "The Eclipse RCP maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
+            "query": { "type": "string", "description": "The maintenance query to route" }
           },
-          "required": [
-            "query"
-          ]
-        }
-      },
-      {
-        "name": "maintenance_webservice",
-        "tags": [
-          "maintenance",
-          "webservice",
-          "api"
-        ],
-        "displayName": "Web Service Maintenance Agent",
-        "modelDescription": "Provides expert guidance for REST and SOAP API modernization, OpenAPI/Swagger updates, gRPC migrations, authentication upgrades (OAuth2, JWT, API keys), HTTP client library migrations, and microservice maintenance. Call this when the user's question involves REST APIs, SOAP, OpenAPI, OAuth2, JWT, or API gateway configurations.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The web service maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      },
-      {
-        "name": "maintenance_os_compat",
-        "tags": [
-          "maintenance",
-          "os",
-          "compatibility"
-        ],
-        "displayName": "OS Compatibility Maintenance Agent",
-        "modelDescription": "Provides expert guidance for cross-platform compatibility issues, path handling (Windows/Linux/macOS), system call compatibility, Docker and container compatibility, environment variable management, and CI/CD platform differences. Call this when the user's question involves cross-platform code, file paths, Docker, environment variables, or OS-specific behaviour.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The OS compatibility question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      },
-      {
-        "name": "maintenance_vulnerability",
-        "tags": [
-          "maintenance",
-          "security",
-          "vulnerability"
-        ],
-        "displayName": "Vulnerability Fix Agent",
-        "modelDescription": "Provides expert guidance for CVE remediation, dependency vulnerability fixes, OWASP Top 10 mitigations (SQL injection, XSS, CSRF, etc.), secure coding pattern adoption, secrets management, and security audit findings. Call this when the user's question involves CVEs, security vulnerabilities, OWASP, dependency audits, or secure coding.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The vulnerability or security question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      },
-      {
-        "name": "maintenance_test_fix",
-        "tags": [
-          "maintenance",
-          "testing"
-        ],
-        "displayName": "Test Fix Agent",
-        "modelDescription": "Provides expert guidance for diagnosing and fixing flaky tests, upgrading test frameworks (JUnit 4 to 5, pytest upgrades, Mocha/Jest updates), improving test coverage, modernizing test patterns, and fixing test infrastructure issues. Call this when the user's question involves failing tests, flaky tests, JUnit, pytest, Mocha, Jest, or test coverage.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The test maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      },
-      {
-        "name": "maintenance_sonarqube",
-        "tags": [
-          "maintenance",
-          "quality",
-          "sonarqube"
-        ],
-        "displayName": "SonarQube Fix Agent",
-        "modelDescription": "Provides expert guidance for resolving SonarQube issues, code smell remediation, technical debt reduction, cognitive complexity reduction, and static analysis finding fixes. Call this when the user's question involves SonarQube rules, code smells, technical debt, static analysis, or code quality metrics.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The SonarQube or code quality question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      },
-      {
-        "name": "maintenance_autosar",
-        "tags": [
-          "maintenance",
-          "autosar",
-          "arxml"
-        ],
-        "displayName": "AUTOSAR Maintenance Agent",
-        "modelDescription": "Provides expert guidance for Classic AUTOSAR R4.x (R4.0–R4.4) ARXML schema migration, deprecated element replacement, namespace URI updates, BSW module configuration for ETAS RTA-BSW, SWC and port interface compatibility, data type migration, and Artop model validation. Call this when the user's question involves AUTOSAR, ARXML, ISOLAR-A, Artop, RTA-BSW, ECUC, SWC, or ECU configuration.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "The AUTOSAR maintenance question or task"
-            },
-            "command": {
-              "type": "string",
-              "enum": [
-                "fix",
-                "analyze",
-                "upgrade",
-                "security"
-              ]
-            }
-          },
-          "required": [
-            "query"
-          ]
+          "required": ["query"]
         }
       }
     ]
