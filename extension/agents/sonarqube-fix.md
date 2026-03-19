@@ -63,18 +63,18 @@ The SonarQube Fix Maintenance Agent provides automated assistance for code quali
 - Configure `.editorconfig` and `Directory.Build.props` to enforce analyzer severity across the solution
 
 ### 8. Python Static Analysis (pylint / ruff / bandit)
-- Configure  and  rules in  and suppress false positives cleanly
-- Fix common SonarQube Python issues: string duplication, assert in production code
-- Integrate  security linter and fix B-prefixed security warnings (SQL injection, hardcoded secrets)
-- Run  for Python with - Configure SonarQube Python Quality Gate thresholds and map to  /  severity levels
-- Apply  to eliminate type-related SonarQube issues
+- Configure `pylint` and `ruff` rules in `pyproject.toml` and suppress false positives with inline `# noqa: RULEid` comments (never bare `# noqa`)
+- Fix common SonarQube Python issues: string duplication, `assert` in production code
+- Integrate `bandit` security linter and fix B-prefixed security warnings (SQL injection, hardcoded secrets)
+- Run `ruff check` and `pylint` for Python; configure SonarQube Python Quality Gate thresholds and map to `pylint` / `ruff` severity levels
+- Apply `mypy` to eliminate type-related SonarQube issues
 
 ### 9. Perl Static Analysis (Perl::Critic)
-- Map SonarQube Perl rule violations to  policy names and fix them
-- Configure  severity levels to match project Quality Gate thresholds
-- Fix common violations: , , - Integrate  output into SonarQube via Generic Issue Import format
-- Apply  to eliminate formatting-related code smell warnings
-- Track  violation trends in SonarQube dashboards
+- Map SonarQube Perl rule violations to `Perl::Critic` policy names and fix them
+- Configure `Perl::Critic` severity levels in `.perlcriticrc` to match project Quality Gate thresholds
+- Fix common violations: `ProhibitStringyEval`, `RequireUseStrict`, `ProhibitNoStrict` — integrate `Perl::Critic` output into SonarQube via Generic Issue Import format
+- Apply `perltidy` to eliminate formatting-related code smell warnings
+- Track `Perl::Critic` violation trends in SonarQube dashboards
 
 ## Issue Categories
 
@@ -165,6 +165,8 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+- Any suppression annotation (`@SuppressWarnings("S1234")`, `#pragma warning disable S1234`, `# noqa: E501`, `//NOSONAR`) MUST include the exact rule ID and a one-line comment stating why the suppression is justified (e.g. `// S2589: condition is always true by contract — upstream guarantees non-null`). A bare suppression with no explanation is itself a code smell and will not be accepted.
+- If closing a SonarQube issue requires only adding a suppression — with no code change — stop and explain the actual fix; suppressions are a last resort, not a first response.
 
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: detect by project type — `pom.xml` / `build.gradle` → run `mvn test` / `./gradlew test`; `package.json` → run `npm test` or `yarn test`; `*.csproj` / `*.sln` → run `dotnet build && dotnet test`; `pyproject.toml` / `requirements.txt` → run `pytest`; `Makefile.PL` / `Build.PL` → run `make test` / `./Build test`; no build file → run the changed file directly using the language runtime.

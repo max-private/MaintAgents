@@ -110,6 +110,8 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+- `Require-Bundle` version ranges for internally-developed plugins MUST use closed exact ranges `[x.y.z,x.y.z]` — open-ended minimums (e.g. `bundle-version="1.0.0"`) allow any future version to satisfy the constraint, which breaks deterministic builds when a new incompatible version is published.
+- Never reference `file:` URIs in p2 target platform definitions or `*.target` files — use canonical bundle IDs or `https:` repository URLs to ensure builds are reproducible outside a single developer machine.
 
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: check the project tree for `pom.xml` with Tycho → run `mvn -Peclipse clean package`; standalone `MANIFEST.MF` / `plugin.xml` → build from Eclipse IDE or run `ant -f build.xml`; no build file → compile the plugin directly (e.g. `javac -cp eclipse_home/plugins/*.jar FileName.java`).

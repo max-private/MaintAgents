@@ -113,7 +113,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - When the fix involves an AWT→Swing migration, replace ALL AWT components: `Button` → `JButton`, `TextField` → `JTextField`, `TextArea` → `JTextArea`, `Label` → `JLabel`, `Checkbox` → `JCheckBox`, `List` → `JList`, `Choice` → `JComboBox`, `Panel` → `JPanel`, `Frame` → `JFrame`, `Dialog` → `JDialog` — a mixed AWT/Swing file is not a valid fix
 
 After applying all fixes, verify correctness in this order:
-1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent).
+1. **Find the build tool**: check the project tree for `pom.xml` → run `mvn compile test`; `build.gradle` / `build.gradle.kts` → run `./gradlew build`; no build file → compile the changed file directly (e.g. `javac FileName.java` or language equivalent). If BOTH `pom.xml` and `build.gradle` exist, use Maven and state: "Dual build files detected — using Maven as primary."
 2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
@@ -127,6 +127,8 @@ Produce a numbered migration plan. Each step MUST include all three of the follo
 - **Change** -- the exact file edit shown as a fenced Before/After code block
 - **Command** -- the exact Maven/Gradle command to run, if applicable
 - **Verify** -- the command or check that confirms the step succeeded
+
+Never plan a jump of more than one major JDK version per `upgrade` invocation (8→11 is valid; 8→21 is not — split into 8→11, then 11→17, then 17→21). Same rule applies to Spring Boot: never cross more than one major version boundary (2.x→3.x is valid; 1.x→3.x is not).
 
 Do not describe steps in prose without code.
 

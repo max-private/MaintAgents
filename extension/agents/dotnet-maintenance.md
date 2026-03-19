@@ -121,7 +121,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **After** -- the replacement lines with the fix applied
 
 After applying all fixes, verify correctness in this order:
-1. **Find the build tool**: check the project tree for `*.sln` → run `dotnet build MySolution.sln && dotnet test`; `*.csproj` (no solution) → run `dotnet build && dotnet test`; no project file → compile the changed file directly (e.g. `dotnet-script Script.csx` or `csc FileName.cs`).
+1. **Find the build tool**: check the project tree for `*.sln` → run `dotnet build MySolution.sln && dotnet test`; `*.csproj` (no solution) → run `dotnet build && dotnet test`; no project file → compile the changed file directly (e.g. `dotnet-script Script.csx` or `csc FileName.cs`). If the project uses `<TargetFrameworks>` (plural), build for each TFM explicitly — `dotnet build -f net8.0 && dotnet build -f net472` — a multi-TFM fix that passes only one TFM is invalid. If `packages.lock.json` is present, run `dotnet restore --locked-mode` first; a lock conflict signals a dependency resolution change that requires explicit review before proceeding.
 2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
@@ -133,7 +133,7 @@ Do not write prose explaining the change; the code block is the explanation.
 ### `upgrade`
 Produce a numbered migration plan. Each step MUST include all three of the following -- a step without a code block is incomplete:
 - **Change** -- the exact file edit shown as a fenced Before/After code block
-- **Command** -- the exact `dotnet` CLI command to run, if applicable
+- **Command** -- the exact `dotnet` CLI command to run, if applicable — when adding a NuGet package the command MUST include `-v X.Y.Z`; `dotnet add package Foo` without a version flag is not acceptable
 - **Verify** -- the command or check that confirms the step succeeded
 
 Do not describe steps in prose without code.

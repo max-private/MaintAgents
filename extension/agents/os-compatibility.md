@@ -156,6 +156,8 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+- Never hardcode path separator characters (`\`, `/`, `:`) in replacement code — use `Path.Combine` / `Path.Join` (.NET), `os.path.join` / `pathlib.Path` (Python), `File::Spec->catfile` (Perl), `Paths.get` / `File.separator` (Java).
+- When adding a platform guard (`OperatingSystem.IsWindows()`, `RuntimeInformation.IsOSPlatform()`, `sys.platform`, `$^O`), the After block MUST include a cross-platform fallback for every branch — a guard that only handles one OS and throws or silently no-ops on others is not a fix.
 
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: detect by project type — `pom.xml` / `build.gradle` → run `mvn test` / `./gradlew test`; `package.json` → run `npm test` or `yarn test`; `*.csproj` / `*.sln` → run `dotnet build && dotnet test`; `pyproject.toml` / `requirements.txt` → run `pytest`; `Makefile.PL` / `Build.PL` → run `make test` / `./Build test`; no build file → run the changed file directly using the language runtime.
