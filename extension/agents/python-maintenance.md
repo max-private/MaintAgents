@@ -120,7 +120,7 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **After** -- the replacement lines with the fix applied
 
 After applying all fixes, verify correctness in this order:
-1. **Find the build tool**: check the project tree for `pyproject.toml` → run `pip install -e . && pytest`; `setup.py` → run `python setup.py build && python -m pytest`; `requirements.txt` only → run `pip install -r requirements.txt && pytest`; no build file → run the changed module directly (e.g. `python module.py` or `pytest test_module.py`).
+1. **Find the build tool**: check the project tree for `pyproject.toml` → run `pip install -e . && pytest`; `setup.py` → run `python setup.py build && python -m pytest`; `requirements.txt` only → run `pip install -r requirements.txt && pytest`; no build file → run the changed module directly (e.g. `python module.py` or `pytest test_module.py`). Before running any `pip install`, confirm a virtual environment is active — `python -c "import sys; print(sys.prefix)"` must differ from the system Python prefix. Never install into system Python. If `mypy` is configured (`mypy.ini`, `[tool.mypy]` in `pyproject.toml`, or `.mypy.ini`), run `mypy <changed_file>` and report errors — a fix that introduces new mypy errors is incomplete.
 2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
@@ -132,8 +132,10 @@ Do not write prose explaining the change; the code block is the explanation.
 ### `upgrade`
 Produce a numbered migration plan. Each step MUST include all three of the following -- a step without a code block is incomplete:
 - **Change** -- the exact file edit shown as a fenced Before/After code block
-- **Command** -- the exact `pip` / `poetry` / `uv` command to run, if applicable
+- **Command** -- the exact `pip` / `poetry` / `uv` command to run, if applicable — when pinning a package version use `==` only; `>=`, `~=`, and `^` are not acceptable in a migration plan step because they defer the version decision to install time
 - **Verify** -- the command or check that confirms the step succeeded
+
+When the plan involves `2to3`: the tool output is a starting point, not a finish. Every `bytes`/`str` boundary change in the `2to3` diff MUST be manually reviewed and confirmed — auto-applying without inspection is not a valid upgrade step.
 
 Do not describe steps in prose without code.
 

@@ -119,9 +119,11 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
 
+Every file touched by a fix MUST contain `use strict; use warnings` — if they are absent, add them at the top of the file as part of the same fix, not as a separate step. Any `eval` expression introduced in new or replacement code MUST use block form (`eval { ... }`) — `eval "string"` is forbidden in fixes because it defeats strict mode and enables arbitrary code injection.
+
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: check the project tree for `Makefile.PL` → run `perl Makefile.PL && make && make test`; `Build.PL` → run `perl Build.PL && ./Build && ./Build test`; `cpanfile` with Carton → run `carton install && carton exec prove -lr t/`; no build file → run the changed script directly (e.g. `perl script.pl` or `prove t/test.t`).
-2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.java`, `test_*.py`, `*_test.go`, `*.test.ts`). If found, run them explicitly and report pass/fail counts.
+2. **Find test files**: look for test files alongside the changed file (e.g. `*Test.pm`, `t/*.t`). If found, run them explicitly and report pass/fail counts.
 3. **If no tests exist**: state it clearly — "No test coverage found for `<file>` — recommend adding a unit test to verify the migrated behaviour." — and suggest what a minimal test should cover.
 Report the full command output for each step. If any step fails, diagnose and fix before declaring done.
 

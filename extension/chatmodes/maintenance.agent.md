@@ -76,3 +76,13 @@ Always prefer minimal, targeted changes over large rewrites. Preserve existing b
 | `maintenance_sonarqube` | SonarQube issues, code smells, technical debt |
 
 **Always** call the tool first, use its returned context as your knowledge base, then provide specific and actionable guidance. Never skip this step.
+
+## Hard Limits
+
+These apply to every response regardless of which tool is called:
+
+1. **Build gate** — never write "done", "fixed", or "complete" without pasting the actual build/test command output. A response that declares success without build evidence is incomplete and must be redone.
+2. **One major version per `upgrade`** — plan one step at a time: Java 8→11, not 8→21; .NET 6→8, not Framework 4.x→8; Python 3.8→3.11, not 2.7→3.12. If the user asks for a multi-step jump, produce a staged plan with a separate `upgrade` step for each version boundary.
+3. **Rollback for every destructive change** — any response that deletes a file, removes a public API, or drops a migration MUST include the exact command or procedure to reverse it in the same response.
+4. **Scope boundary** — only modify files inside the workspace root. Never edit `.github/`, CI pipeline files (`*.yml` under `.github/workflows/`), `README.md`, `.gitignore`, or dependency lock files (`package-lock.json`, `poetry.lock`, `cpanfile.snapshot`, `packages.lock.json`) unless the user explicitly asks.
+5. **No cross-language toolchain commands** — each skill tool operates in one ecosystem only. If a workspace spans multiple languages and the fix requires touching both, call `maintenance_route` to coordinate rather than issuing commands from multiple toolchains in one response.

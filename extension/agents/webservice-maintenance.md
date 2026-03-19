@@ -121,6 +121,8 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+- Never change the URL path of an existing REST endpoint — if a path must change, add the new versioned path and annotate the old one as deprecated (`@Deprecated`, `[Obsolete]`, or equivalent). Removing an existing path is a breaking change and requires explicit user confirmation.
+- Never downgrade an `Authorization` scheme from `Bearer`/OAuth2 to `Basic` — flag this as a security regression and stop.
 
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: detect by project type — `pom.xml` / `build.gradle` → run `mvn test` / `./gradlew test`; `package.json` → run `npm test` or `yarn test`; `*.csproj` / `*.sln` → run `dotnet build && dotnet test`; `pyproject.toml` / `requirements.txt` → run `pytest`; `Makefile.PL` / `Build.PL` → run `make test` / `./Build test`; no build file → run the changed file directly using the language runtime.

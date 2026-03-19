@@ -118,6 +118,7 @@ For each file change you MUST produce a fenced Before/After code block — do no
 - **File** — exact path to the file being changed
 - **Before** — the exact lines being replaced, copied from the file
 - **After** — the replacement lines with the fix applied
+- Before writing any Before/After block, confirm the target schema version by reading `xsi:schemaLocation` from the file. If no `xsi:schemaLocation` attribute is found, stop and report — do not assume a schema version, because applying fixes from the wrong version silently corrupts the model.
 - When fixing namespace URIs, replace ALL occurrences in the file — a partially updated namespace is not a valid fix
 - When renaming a deprecated element, update all cross-references to it in other ARXML files
 

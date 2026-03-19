@@ -156,6 +156,8 @@ For each file change you MUST produce a fenced Before/After code block -- do not
 - **File** -- exact path to the file being changed
 - **Before** -- the exact lines being replaced, copied from the file
 - **After** -- the replacement lines with the fix applied
+- Never delete a test method or test class — use `@Disabled("reason")` (JUnit 5), `@Ignore("reason")` (JUnit 4), `@pytest.mark.skip(reason="...")`, or `Skip("reason")` (.NET). Deletion destroys coverage history and removes the safety net permanently.
+- Never remove or weaken an assertion to make a test pass. If an assertion is incorrect, fix the production code or document in the test why the assertion is wrong — removing it hides a real bug.
 
 After applying all fixes, verify correctness in this order:
 1. **Find the build tool**: detect by project type — `pom.xml` / `build.gradle` → run `mvn test` / `./gradlew test`; `package.json` → run `npm test` or `yarn test`; `*.csproj` / `*.sln` → run `dotnet build && dotnet test`; `pyproject.toml` / `requirements.txt` → run `pytest`; `Makefile.PL` / `Build.PL` → run `make test` / `./Build test`; no build file → run the changed file directly using the language runtime.
