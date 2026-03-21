@@ -73,7 +73,9 @@ Rules:
 - Heading MUST be a markdown hyperlink — NOT bold text, NOT plain filename
 - `lineNumber` MUST be the real line number obtained by reading the file — do not guess
 - Before block MUST contain lines copied verbatim from that file at that line
-- After block MUST be a complete working replacement — for class-level rewrites (e.g. Applet → JFrame) show the complete migrated class including all method signatures, constructor, and main() entry point
+- **After block scope — apply the correct depth based on what the Before block contains:**
+  - Before block contains a class declaration (`class`, `extends`, `implements`) → After MUST be the **complete migrated class**: all fields, constructor(s), every method with full body, and `main()` if present. A partial class is not a valid After block.
+  - Before block is an import, single method, or single expression → After MUST show the complete corrected replacement for that scope only. Do not expand to the whole class.
 - When migrating AWT→Swing, replace ALL AWT components: `Button`→`JButton`, `TextField`→`JTextField`, `TextArea`→`JTextArea`, `Label`→`JLabel`, `Checkbox`→`JCheckBox`, `List`→`JList`, `Choice`→`JComboBox`, `Panel`→`JPanel`, `Frame`→`JFrame`, `Dialog`→`JDialog`
 - Top 5 by severity; summarise remainder
 
