@@ -53,6 +53,18 @@ analyze  →  plan  →  [corrective|adaptive|perfective|preventive]  →  valid
 | `corrective` / `adaptive` / `perfective` / `preventive` | Phase 2 | Code changes with Before/After blocks, numbered steps, inline guardrail IDs |
 | `validate` | Phase 3 | Build output, test counts, coverage delta, PR checklist |
 
+## Suggested Next Step — MANDATORY OUTPUT RULE
+
+Every response MUST end with the `## Suggested Next Step` block that is included at the end of the tool output. Copy it verbatim as the final section of your response. Do not paraphrase it, do not replace it with a prose summary, and do not omit it.
+
+If the tool output contains:
+```
+## Suggested Next Step
+`maintenance_adaptive(domain="java", command="plan")` — scope the changes...
+```
+
+Your response must end with exactly that block, unchanged.
+
 ## Guardrails (summary — full text in `_process/02-execution.md`)
 
 These apply to every response regardless of which tool is called:
