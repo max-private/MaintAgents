@@ -165,6 +165,49 @@ def load_process_context() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Next-step suggestions
+# ---------------------------------------------------------------------------
+
+_NEXT_PHASE_DESC: dict[str, str] = {
+    "plan":     "scope the changes, define rollback procedure, and set up the branch",
+    "validate": "run Phase 3 gates — build, test, and coverage verification",
+}
+
+_EXECUTION_DESC = "execute Phase 2 and apply the changes"
+
+_VALIDATE_END = (
+    "Phase complete. Open a PR linked to the issue and request review.\n"
+    "If dependencies or security-sensitive code was changed, consider:\n"
+    "`maintenance_preventive(domain=\"dependency-audit\")`"
+)
+
+
+def suggest_next(agent: dict, command: str) -> str:
+    """Return a Suggested Next Step block based on current command + agent type."""
+    if not command:
+        return ""
+    type_name = agent["type"]
+    domain    = agent["domain"]
+    tool_name = TYPE_TOOL_MAP[type_name]
+
+    if command == "analyze":
+        desc = _NEXT_PHASE_DESC["plan"]
+        return f'## Suggested Next Step\n`{tool_name}(domain="{domain}", command="plan")` — {desc}.'
+
+    if command == "plan":
+        return f'## Suggested Next Step\n`{tool_name}(domain="{domain}", command="{type_name}")` — {_EXECUTION_DESC}.'
+
+    if command == type_name:  # execution phase name matches ISO 14764 type
+        desc = _NEXT_PHASE_DESC["validate"]
+        return f'## Suggested Next Step\n`{tool_name}(domain="{domain}", command="validate")` — {desc}.'
+
+    if command == "validate":
+        return f"## Suggested Next Step\n{_VALIDATE_END}"
+
+    return ""
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -185,9 +228,12 @@ def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
     ]
     task_block = "\n".join(line for line in task_lines if line is not None)
 
+    suggestion = suggest_next(agent, command)
+    suffix = f"\n\n---\n\n{suggestion}" if suggestion else ""
+
     if PROCESS_CONTEXT:
-        return f"{md}\n\n---\n\n{PROCESS_CONTEXT}\n\n{task_block}"
-    return f"{md}\n\n{task_block}"
+        return f"{md}\n\n---\n\n{PROCESS_CONTEXT}\n\n{task_block}{suffix}"
+    return f"{md}\n\n{task_block}{suffix}"
 
 
 def route_query(query: str, agents: list[dict], top_n: int = 3) -> list[dict]:
@@ -312,7 +358,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             return [types.TextContent(type="text", text=body)]
         content = "\n\n---\n\n".join(read_agent_content(a, query, command) for a in matched)
         summary = f"Selected agents: {', '.join(a['id'] for a in matched)}"
-        return [types.TextContent(type="text", text=f"{summary}\n\n{content}")]
+        top = matched[0]
+        route_suggestion = (
+            f"## Suggested Next Step\n"
+            f"`{top['tool_name']}(domain=\"{top['domain']}\", command=\"analyze\")` — "
+            f"run the top matched agent directly with the full analyze phase."
+        )
+        return [types.TextContent(type="text", text=f"{summary}\n\n{content}\n\n---\n\n{route_suggestion}")]
 
     # Type-level tool: find agent by (type, domain)
     type_name = name.replace("maintenance_", "")
@@ -344,7 +396,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="3.0.3",
+                server_version="3.0.4",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},

@@ -561,7 +561,93 @@ class TestChatmodeConsistency:
 
 
 # ---------------------------------------------------------------------------
-# 8. Process context loading and injection
+# 8. Next-step suggestions
+# ---------------------------------------------------------------------------
+
+
+class TestSuggestNext:
+
+    def _agent(self, srv, type_name: str, domain: str) -> dict:
+        return next(a for a in srv.AGENTS if a["type"] == type_name and a["domain"] == domain)
+
+    def test_analyze_suggests_plan(self, srv):
+        a = self._agent(srv, "adaptive", "java")
+        s = srv.suggest_next(a, "analyze")
+        assert 'command="plan"' in s
+        assert "maintenance_adaptive" in s
+
+    def test_plan_suggests_execution(self, srv):
+        a = self._agent(srv, "adaptive", "java")
+        s = srv.suggest_next(a, "plan")
+        assert 'command="adaptive"' in s
+        assert "maintenance_adaptive" in s
+
+    def test_execution_suggests_validate(self, srv):
+        a = self._agent(srv, "corrective", "bug-report")
+        s = srv.suggest_next(a, "corrective")
+        assert 'command="validate"' in s
+        assert "maintenance_corrective" in s
+
+    def test_validate_suggests_pr_and_preventive(self, srv):
+        a = self._agent(srv, "adaptive", "java")
+        s = srv.suggest_next(a, "validate")
+        assert "PR" in s
+        assert "dependency-audit" in s
+
+    def test_empty_command_returns_empty(self, srv):
+        a = self._agent(srv, "adaptive", "java")
+        assert srv.suggest_next(a, "") == ""
+
+    def test_unknown_command_returns_empty(self, srv):
+        a = self._agent(srv, "adaptive", "java")
+        assert srv.suggest_next(a, "unknown-cmd") == ""
+
+    def test_suggestion_uses_correct_domain(self, srv):
+        a = self._agent(srv, "preventive", "vulnerability-scan")
+        s = srv.suggest_next(a, "analyze")
+        assert 'domain="vulnerability-scan"' in s
+        assert "maintenance_preventive" in s
+
+    def test_all_execution_commands_suggest_validate(self, srv):
+        """Each type's execution command (corrective/adaptive/perfective/preventive) must suggest validate."""
+        pairs = [
+            ("corrective", "test-fix", "corrective"),
+            ("adaptive",   "java",     "adaptive"),
+            ("perfective", "sonarqube-quality", "perfective"),
+            ("preventive", "dependency-audit",  "preventive"),
+        ]
+        for type_name, domain, exec_cmd in pairs:
+            a = self._agent(srv, type_name, domain)
+            s = srv.suggest_next(a, exec_cmd)
+            assert 'command="validate"' in s, f"Expected validate suggestion for {type_name}/{domain}"
+
+    def test_suggestion_block_in_analyze_tool_response(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_adaptive",
+            {"query": "migrate to Java 17", "domain": "java", "command": "analyze"},
+        ))
+        assert "Suggested Next Step" in result[0].text
+        assert 'command="plan"' in result[0].text
+
+    def test_suggestion_block_in_execution_tool_response(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_corrective",
+            {"query": "fix NPE in OrderService", "domain": "bug-report", "command": "corrective"},
+        ))
+        assert "Suggested Next Step" in result[0].text
+        assert 'command="validate"' in result[0].text
+
+    def test_route_response_suggests_analyze_on_top_agent(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_route",
+            {"query": "Spring Boot Java migration"},
+        ))
+        assert "Suggested Next Step" in result[0].text
+        assert 'command="analyze"' in result[0].text
+
+
+# ---------------------------------------------------------------------------
+# 9. Process context loading and injection
 # ---------------------------------------------------------------------------
 
 
