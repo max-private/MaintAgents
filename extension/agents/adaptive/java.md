@@ -50,11 +50,34 @@ The Java Adaptive Maintenance Agent provides automated assistance for keeping Ja
 
 ## analyze
 
-> **HEADING FORMAT — MANDATORY:** Every group heading MUST be a markdown hyperlink.
+Produce **two parts** in sequence. Do not merge them or skip either.
+
+---
+
+### Part 1 — Triage
+
+Scan the entire workspace. Produce a findings table covering all Java compatibility categories found. No Before/After blocks in this part.
+
+| # | File | Issue category | Severity |
+|---|------|----------------|----------|
+| 1 | `path/to/File.java` | e.g. Deprecated AWT API | High |
+| … | … | … | … |
+
+Severity scale: **High** = removed API / compilation failure; **Medium** = deprecated, still compiles; **Low** = style/lint warning.
+
+List every affected file. Do not truncate. End Part 1 with a one-line summary: `Found N issues across M files.`
+
+---
+
+### Part 2 — Deep Dive
+
+Select the **single highest-severity finding** from the triage table. Produce a complete Before/After block for it.
+
+> **HEADING FORMAT — MANDATORY:** The heading MUST be a markdown hyperlink.
 > Compliant: [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3)
 > Non-compliant: `appletComs.java` · `**Login.java**` · a plain bullet
 
-Scan the workspace. Group findings by fix pattern. Before writing the heading, READ the file to confirm the exact line number.
+Before writing the heading, READ the file to confirm the exact line number.
 
 [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
 
@@ -69,7 +92,7 @@ Scan the workspace. Group findings by fix pattern. Before writing the heading, R
 **Why:** [why it fails under the target Java version]
 **Also affects:** [`path/to/OtherFile.java:line`](path/to/OtherFile.java#Lline) — one link per affected file, same format
 
-Rules:
+Rules for Part 2:
 - Heading MUST be a markdown hyperlink — NOT bold text, NOT plain filename
 - `lineNumber` MUST be the real line number obtained by reading the file — do not guess
 - Before block MUST contain lines copied verbatim from that file at that line
@@ -77,7 +100,7 @@ Rules:
   - Before block contains a class declaration (`class`, `extends`, `implements`) → After MUST be the **complete migrated class**: all fields, constructor(s), every method with full body, and `main()` if present. A partial class is not a valid After block.
   - Before block is an import, single method, or single expression → After MUST show the complete corrected replacement for that scope only. Do not expand to the whole class.
 - When migrating AWT→Swing, replace ALL AWT components: `Button`→`JButton`, `TextField`→`JTextField`, `TextArea`→`JTextArea`, `Label`→`JLabel`, `Checkbox`→`JCheckBox`, `List`→`JList`, `Choice`→`JComboBox`, `Panel`→`JPanel`, `Frame`→`JFrame`, `Dialog`→`JDialog`
-- Top 5 by severity; summarise remainder
+- One finding only. The triage table covers the rest.
 
 ## Phase 1 — Planning
 

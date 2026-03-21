@@ -821,3 +821,117 @@ class TestBugReportDomain:
         assert "bug-report" in chatmode, (
             "bug-report not mentioned in chatmodes/maintenance.agent.md tool selection table"
         )
+
+
+# ---------------------------------------------------------------------------
+# TestExtractPhase — phase-scoped context injection
+# ---------------------------------------------------------------------------
+
+class TestExtractPhase:
+    """extract_phase() should return only Title+Overview + the requested phase section."""
+
+    SAMPLE_MD = """# Java Adaptive Maintenance Agent
+
+## Overview
+The Java Adaptive Maintenance Agent provides automated assistance for Java migrations.
+
+## Core Skills
+
+### 1. Java Version Upgrade
+- Analyze current Java version
+
+### 2. Dependency Management
+- Scan Maven/Gradle
+
+## analyze
+
+Produce two parts in sequence.
+
+### Part 1 — Triage
+Scan workspace.
+
+### Part 2 — Deep Dive
+Select single highest-severity finding.
+
+## Phase 1 — Planning
+
+### Classify
+Adaptive maintenance triggered by JDK change.
+
+## Phase 2 — Adaptive
+
+Produce a numbered migration plan.
+
+## Phase 3 — Validation
+
+1. Build with mvn clean compile test
+"""
+
+    def test_analyze_returns_title_overview_analyze(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "analyze")
+        assert "# Java Adaptive Maintenance Agent" in result
+        assert "## Overview" in result
+        assert "## analyze" in result
+
+    def test_analyze_drops_core_skills(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "analyze")
+        assert "## Core Skills" not in result
+        assert "### 1. Java Version Upgrade" not in result
+
+    def test_analyze_drops_other_phases(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "analyze")
+        assert "## Phase 1" not in result
+        assert "## Phase 2" not in result
+        assert "## Phase 3" not in result
+
+    def test_plan_returns_phase1_section(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "plan")
+        assert "## Phase 1" in result
+        assert "Classify" in result
+
+    def test_plan_drops_analyze_and_phase2(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "plan")
+        assert "## analyze" not in result
+        assert "## Phase 2" not in result
+
+    def test_adaptive_returns_phase2_section(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "adaptive")
+        assert "## Phase 2" in result
+        assert "numbered migration plan" in result
+
+    def test_validate_returns_phase3_section(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "validate")
+        assert "## Phase 3" in result
+        assert "mvn clean compile test" in result
+
+    def test_validate_drops_earlier_phases(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "validate")
+        assert "## analyze" not in result
+        assert "## Phase 1" not in result
+        assert "## Phase 2" not in result
+
+    def test_unknown_command_returns_full_md(self, srv):
+        result = srv.extract_phase(self.SAMPLE_MD, "unknown_cmd")
+        assert "## Core Skills" in result
+        assert "## analyze" in result
+        assert "## Phase 3" in result
+
+    def test_empty_command_returns_full_md_via_read_agent_content(self, srv):
+        """read_agent_content with no command should not extract phase (full md)."""
+        agent = next(a for a in srv.AGENTS if a["domain"] == "java")
+        content = srv.read_agent_content(agent, query="test", command="")
+        assert "## Core Skills" in content
+
+    def test_analyze_command_strips_core_skills_in_tool_response(self, srv):
+        """End-to-end: read_agent_content with command=analyze should exclude Core Skills."""
+        agent = next(a for a in srv.AGENTS if a["domain"] == "java")
+        content = srv.read_agent_content(agent, query="java 21 upgrade", command="analyze")
+        assert "## Core Skills" not in content
+        assert "## analyze" in content
+
+    def test_java_analyze_section_has_triage_and_deep_dive(self, srv):
+        """java.md analyze section must contain Part 1 Triage and Part 2 Deep Dive."""
+        java_md = (EXTENSION_DIR / "agents" / "adaptive" / "java.md").read_text(encoding="utf-8")
+        result = srv.extract_phase(java_md, "analyze")
+        assert "Part 1" in result and "Triage" in result
+        assert "Part 2" in result and "Deep Dive" in result

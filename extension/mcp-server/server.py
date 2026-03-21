@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Maintenance Agents MCP Server — v3.0.2
+Maintenance Agents MCP Server — v3.0.8
 
 ISO 14764 process-oriented architecture. Exposes four type-level MCP tools
 (corrective, adaptive, perfective, preventive) each accepting a domain parameter,
@@ -208,13 +208,80 @@ def suggest_next(agent: dict, command: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Phase-scoped extraction
+# ---------------------------------------------------------------------------
+
+# Maps each command to the H2 heading prefix that starts the relevant section
+_PHASE_HEADING: dict[str, str] = {
+    "analyze":    "## analyze",
+    "plan":       "## Phase 1",
+    "corrective": "## Phase 2",
+    "adaptive":   "## Phase 2",
+    "perfective": "## Phase 2",
+    "preventive": "## Phase 2",
+    "validate":   "## Phase 3",
+}
+
+
+def extract_phase(md: str, command: str) -> str:
+    """
+    Return Title + Overview + only the phase section relevant to *command*.
+
+    If the command is not in _PHASE_HEADING, or the heading is not found,
+    the full markdown is returned unchanged (safe fallback).
+    """
+    heading = _PHASE_HEADING.get(command)
+    if not heading:
+        return md
+
+    lines = md.splitlines(keepends=True)
+
+    # --- collect Title + Overview (everything before the first ### or ## Core Skills) ---
+    preamble_lines: list[str] = []
+    i = 0
+    while i < len(lines):
+        s = lines[i].strip()
+        # Stop preamble at any H2 that is NOT "## Overview"
+        if s.startswith("## ") and s != "## Overview":
+            break
+        preamble_lines.append(lines[i])
+        i += 1
+
+    preamble = "".join(preamble_lines).rstrip()
+
+    # --- find the target section ---
+    target_start: int | None = None
+    for j in range(i, len(lines)):
+        s = lines[j].strip()
+        if s.lower().startswith(heading.lower()):
+            target_start = j
+            break
+
+    if target_start is None:
+        return md  # heading not found — safe fallback
+
+    # --- collect lines until next H2 (or end of file) ---
+    section_lines: list[str] = []
+    for k in range(target_start, len(lines)):
+        s = lines[k].strip()
+        if k != target_start and s.startswith("## "):
+            break
+        section_lines.append(lines[k])
+
+    section = "".join(section_lines).rstrip()
+    return f"{preamble}\n\n{section}"
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
     md_path: Path = agent["md_path"]
-    md = md_path.read_text(encoding="utf-8") if md_path.exists() \
+    full_md = md_path.read_text(encoding="utf-8") if md_path.exists() \
         else f"# {agent['name']}\n\nDocumentation not found."
+
+    md = extract_phase(full_md, command) if command else full_md
 
     suggestion = suggest_next(agent, command)
 
@@ -407,7 +474,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="3.0.7",
+                server_version="3.0.8",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
