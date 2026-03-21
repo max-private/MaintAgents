@@ -71,36 +71,36 @@ List every affected file. Do not truncate. End Part 1 with a one-line summary: `
 
 ### Part 2 — Deep Dive
 
-Select the **single highest-severity finding** from the triage table. Produce a complete Before/After block for it.
+Produce **one Deep Dive block per distinct issue category** found in Part 1. Pick the highest-severity file within each category. Do not skip a category.
 
-> **HEADING FORMAT — MANDATORY:** The heading MUST be a markdown hyperlink.
-> Compliant: [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3)
-> Non-compliant: `appletComs.java` · `**Login.java**` · a plain bullet
+Each Deep Dive block has this exact structure — the heading is ALWAYS a markdown hyperlink:
 
-Before writing the heading, READ the file to confirm the exact line number.
-
-[`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber)
+#### [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber) — *Category name*
 
 **Before** — exact lines from the file at that line:
 ```language
-[exact lines from the file at that line number]
+[exact lines verbatim from the file at that line number]
 ```
 **After** — complete working replacement:
 ```language
-[complete corrected replacement — not just the changed line]
+[complete corrected replacement]
 ```
 **Why:** [why it fails under the target Java version]
-**Also affects:** [`path/to/OtherFile.java:line`](path/to/OtherFile.java#Lline) — one link per affected file, same format
+**Also affects:** [`path/to/OtherFile.java:line`](path/to/OtherFile.java#Lline) — one link per affected file in this category
 
-Rules for Part 2:
-- Heading MUST be a markdown hyperlink — NOT bold text, NOT plain filename
-- `lineNumber` MUST be the real line number obtained by reading the file — do not guess
+> **HEADING FORMAT — MANDATORY:**
+> - The heading MUST be a markdown hyperlink — `[` backtick `path/to/File.java:lineNumber` backtick `]` `(path/to/File.java#LlineNumber)`
+> - Compliant: [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3) — *Applet API removed*
+> - Non-compliant: `### appletComs.java` · `**appletComs.java**` · plain text heading
+> - Before writing the heading, READ the file to confirm the exact line number — do not guess
+
+Rules for each Deep Dive block:
+- `lineNumber` MUST be obtained by reading the file — do not guess
 - Before block MUST contain lines copied verbatim from that file at that line
 - **After block scope — apply the correct depth based on what the Before block contains:**
   - Before block contains a class declaration (`class`, `extends`, `implements`) → After MUST be the **complete migrated class**: all fields, constructor(s), every method with full body, and `main()` if present. A partial class is not a valid After block.
   - Before block is an import, single method, or single expression → After MUST show the complete corrected replacement for that scope only. Do not expand to the whole class.
 - When migrating AWT→Swing, replace ALL AWT components: `Button`→`JButton`, `TextField`→`JTextField`, `TextArea`→`JTextArea`, `Label`→`JLabel`, `Checkbox`→`JCheckBox`, `List`→`JList`, `Choice`→`JComboBox`, `Panel`→`JPanel`, `Frame`→`JFrame`, `Dialog`→`JDialog`
-- One finding only. The triage table covers the rest.
 
 ## Phase 1 — Planning
 

@@ -935,3 +935,24 @@ Produce a numbered migration plan.
         result = srv.extract_phase(java_md, "analyze")
         assert "Part 1" in result and "Triage" in result
         assert "Part 2" in result and "Deep Dive" in result
+
+    def test_java_analyze_deep_dive_requires_one_per_category(self, srv):
+        """java.md Part 2 must instruct one Deep Dive block per distinct issue category."""
+        java_md = (EXTENSION_DIR / "agents" / "adaptive" / "java.md").read_text(encoding="utf-8")
+        result = srv.extract_phase(java_md, "analyze")
+        assert "per distinct issue category" in result, (
+            "Part 2 must require one Deep Dive per category, not a single finding"
+        )
+
+    def test_java_analyze_deep_dive_heading_is_hyperlink(self, srv):
+        """java.md Part 2 must enforce markdown hyperlink heading format."""
+        java_md = (EXTENSION_DIR / "agents" / "adaptive" / "java.md").read_text(encoding="utf-8")
+        result = srv.extract_phase(java_md, "analyze")
+        # Compliant example must appear in the heading format rule
+        assert "](JavaCodes/appletComs.java#L" in result, (
+            "Part 2 must show a compliant hyperlink heading example"
+        )
+        # Non-compliant patterns must be explicitly called out
+        assert "Non-compliant" in result, (
+            "Part 2 must list non-compliant heading patterns to reject"
+        )
