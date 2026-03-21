@@ -186,7 +186,7 @@ def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
     task_block = "\n".join(line for line in task_lines if line is not None)
 
     if PROCESS_CONTEXT:
-        return f"{PROCESS_CONTEXT}\n\n---\n\n{md}\n\n{task_block}"
+        return f"{md}\n\n---\n\n{PROCESS_CONTEXT}\n\n{task_block}"
     return f"{md}\n\n{task_block}"
 
 
@@ -308,7 +308,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 "or specify the technology stack and maintenance type explicitly "
                 "(e.g. corrective/test-fix, adaptive/java, preventive/dependency-audit)."
             )
-            body = f"{PROCESS_CONTEXT}\n\n---\n\n{fallback}" if PROCESS_CONTEXT else fallback
+            body = f"{fallback}\n\n---\n\n{PROCESS_CONTEXT}" if PROCESS_CONTEXT else fallback
             return [types.TextContent(type="text", text=body)]
         content = "\n\n---\n\n".join(read_agent_content(a, query, command) for a in matched)
         summary = f"Selected agents: {', '.join(a['id'] for a in matched)}"
