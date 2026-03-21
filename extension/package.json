@@ -2,7 +2,7 @@
   "name": "maintenance-agents",
   "displayName": "Maintenance Agents",
   "description": "ISO 14764 maintenance agents — Corrective, Adaptive, Perfective, and Preventive maintenance across Java, .NET, Python, Perl, Eclipse RCP, web services, OS compatibility, AUTOSAR, and code quality",
-  "version": "3.1.8",
+  "version": "3.1.9",
   "publisher": "MaintenanceAgents",
   "license": "MIT",
   "author": {

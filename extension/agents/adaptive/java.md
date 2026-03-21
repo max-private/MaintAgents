@@ -73,33 +73,44 @@ List every affected file. Do not truncate. End Part 1 with a one-line summary: `
 
 Produce **one Deep Dive block per distinct issue category** found in Part 1. Pick the highest-severity file within each category. Do not skip a category.
 
-Each Deep Dive block has this exact structure — the heading is ALWAYS a markdown hyperlink:
+**STOP — before writing any heading, read this:**
 
-#### [`path/to/File.java:lineNumber`](path/to/File.java#LlineNumber) — *Category name*
+The heading for each block MUST be a markdown hyperlink. A plain heading is WRONG. Every single block heading must follow this exact format:
 
-**Before** — exact lines from the file at that line:
+```
+#### [`relative/path/to/File.java:lineNumber`](relative/path/to/File.java#LlineNumber) — *Category name*
+```
+
+- ✅ CORRECT: `#### [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3) — *Applet API removed*`
+- ❌ WRONG: `### appletComs.java — *Applet API removed*`
+- ❌ WRONG: `**appletComs.java**`
+- ❌ WRONG: any heading without a `[` `]` `(` `)` hyperlink
+
+Before writing the line number, READ the file to get the exact value — do not guess.
+
+---
+
+Each Deep Dive block structure:
+
+#### [`relative/path/to/File.java:lineNumber`](relative/path/to/File.java#LlineNumber) — *Category name*
+
+**Before** — exact lines verbatim from the file at that line:
 ```language
-[exact lines verbatim from the file at that line number]
+[exact lines copied from the file]
 ```
 **After** — complete working replacement:
 ```language
 [complete corrected replacement]
 ```
 **Why:** [why it fails under the target Java version]
-**Also affects:** [`path/to/OtherFile.java:line`](path/to/OtherFile.java#Lline) — one link per affected file in this category
+**Also affects:** [`relative/path/OtherFile.java:line`](relative/path/OtherFile.java#Lline) — one hyperlink per affected file
 
-> **HEADING FORMAT — MANDATORY:**
-> - The heading MUST be a markdown hyperlink — `[` backtick `path/to/File.java:lineNumber` backtick `]` `(path/to/File.java#LlineNumber)`
-> - Compliant: [`JavaCodes/appletComs.java:3`](JavaCodes/appletComs.java#L3) — *Applet API removed*
-> - Non-compliant: `### appletComs.java` · `**appletComs.java**` · plain text heading
-> - Before writing the heading, READ the file to confirm the exact line number — do not guess
-
-Rules for each Deep Dive block:
-- `lineNumber` MUST be obtained by reading the file — do not guess
-- Before block MUST contain lines copied verbatim from that file at that line
-- **After block scope — apply the correct depth based on what the Before block contains:**
-  - Before block contains a class declaration (`class`, `extends`, `implements`) → After MUST be the **complete migrated class**: all fields, constructor(s), every method with full body, and `main()` if present. A partial class is not a valid After block.
-  - Before block is an import, single method, or single expression → After MUST show the complete corrected replacement for that scope only. Do not expand to the whole class.
+Rules:
+- `lineNumber` MUST come from reading the file — do not guess
+- Before block MUST contain lines copied verbatim from that file
+- **After block scope:**
+  - Before block contains a class declaration (`class`, `extends`, `implements`) → After MUST be the **complete migrated class**: all fields, constructor(s), every method with full body, and `main()` if present
+  - Before block is an import, single method, or single expression → After covers that scope only
 - When migrating AWT→Swing, replace ALL AWT components: `Button`→`JButton`, `TextField`→`JTextField`, `TextArea`→`JTextArea`, `Label`→`JLabel`, `Checkbox`→`JCheckBox`, `List`→`JList`, `Choice`→`JComboBox`, `Panel`→`JPanel`, `Frame`→`JFrame`, `Dialog`→`JDialog`
 
 ## Phase 1 — Planning

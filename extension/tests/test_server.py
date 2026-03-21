@@ -952,7 +952,7 @@ Produce a numbered migration plan.
         assert "](JavaCodes/appletComs.java#L" in result, (
             "Part 2 must show a compliant hyperlink heading example"
         )
-        # Non-compliant patterns must be explicitly called out
-        assert "Non-compliant" in result, (
-            "Part 2 must list non-compliant heading patterns to reject"
+        # Wrong/non-compliant patterns must be explicitly called out
+        assert "WRONG" in result or "Non-compliant" in result, (
+            "Part 2 must list non-compliant/wrong heading patterns to reject"
         )
