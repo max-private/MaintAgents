@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Maintenance Agents MCP Server — v3.0.0
+Maintenance Agents MCP Server — v3.0.2
 
 ISO 14764 process-oriented architecture. Exposes four type-level MCP tools
 (corrective, adaptive, perfective, preventive) each accepting a domain parameter,
@@ -37,6 +37,7 @@ AGENTS_DIR     = EXTENSION_PATH / "agents"
 
 # ISO 14764 process type directories (excludes _process/ framework files)
 TYPE_DIRS = ["corrective", "adaptive", "perfective", "preventive"]
+PROCESS_DIR = AGENTS_DIR / "_process"
 
 TYPE_TOOL_MAP: dict[str, str] = {
     "corrective": "maintenance_corrective",
@@ -147,6 +148,23 @@ def load_agents() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Process framework loading
+# ---------------------------------------------------------------------------
+
+def load_process_context() -> str:
+    """
+    Load _process/*.md files in sorted order and concatenate into a single
+    framework context block that is injected into every tool response.
+    """
+    if not PROCESS_DIR.exists():
+        return ""
+    parts: list[str] = []
+    for f in sorted(PROCESS_DIR.glob("*.md")):
+        parts.append(f.read_text(encoding="utf-8"))
+    return "\n\n---\n\n".join(parts)
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -166,6 +184,9 @@ def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
         "Produce concrete output: code diffs, migration steps, or fix recommendations — not a summary of what could be done.",
     ]
     task_block = "\n".join(line for line in task_lines if line is not None)
+
+    if PROCESS_CONTEXT:
+        return f"{PROCESS_CONTEXT}\n\n---\n\n{md}\n\n{task_block}"
     return f"{md}\n\n{task_block}"
 
 
@@ -188,7 +209,8 @@ def route_query(query: str, agents: list[dict], top_n: int = 3) -> list[dict]:
 # MCP Server
 # ---------------------------------------------------------------------------
 
-AGENTS = load_agents()
+AGENTS          = load_agents()
+PROCESS_CONTEXT = load_process_context()
 server = Server("maintenance-agents")
 
 
@@ -280,15 +302,14 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     if name == "maintenance_route":
         matched = route_query(query, AGENTS)
         if not matched:
-            return [types.TextContent(
-                type="text",
-                text=(
-                    "Could not determine the maintenance domain from the query. "
-                    "Consult _process/00-decision-tree.md to classify the request, "
-                    "or specify the technology stack and maintenance type explicitly "
-                    "(e.g. corrective/test-fix, adaptive/java, preventive/dependency-audit)."
-                ),
-            )]
+            fallback = (
+                "Could not determine the maintenance domain from the query. "
+                "Use the decision tree below to classify the request, "
+                "or specify the technology stack and maintenance type explicitly "
+                "(e.g. corrective/test-fix, adaptive/java, preventive/dependency-audit)."
+            )
+            body = f"{PROCESS_CONTEXT}\n\n---\n\n{fallback}" if PROCESS_CONTEXT else fallback
+            return [types.TextContent(type="text", text=body)]
         content = "\n\n---\n\n".join(read_agent_content(a, query, command) for a in matched)
         summary = f"Selected agents: {', '.join(a['id'] for a in matched)}"
         return [types.TextContent(type="text", text=f"{summary}\n\n{content}")]
@@ -323,7 +344,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="3.0.1",
+                server_version="3.0.2",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
