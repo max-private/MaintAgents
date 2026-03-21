@@ -561,7 +561,77 @@ class TestChatmodeConsistency:
 
 
 # ---------------------------------------------------------------------------
-# 8. Bug-report domain — agent loading, routing, and dispatch
+# 8. Process context loading and injection
+# ---------------------------------------------------------------------------
+
+
+PROCESS_DIR = EXTENSION_DIR / "agents" / "_process"
+PROCESS_FILES = sorted(PROCESS_DIR.glob("*.md")) if PROCESS_DIR.exists() else []
+
+
+class TestProcessContext:
+
+    def test_process_context_is_loaded(self, srv):
+        assert srv.PROCESS_CONTEXT, "PROCESS_CONTEXT must be non-empty"
+
+    def test_process_context_contains_all_files(self, srv):
+        """Every _process/*.md title should appear in the combined context."""
+        for f in PROCESS_FILES:
+            first_line = f.read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()
+            assert first_line in srv.PROCESS_CONTEXT, (
+                f"Content from {f.name} not found in PROCESS_CONTEXT"
+            )
+
+    def test_process_context_contains_guardrail_ids(self, srv):
+        """02-execution.md defines guardrail IDs — they must be present in context."""
+        assert "G-GIT" in srv.PROCESS_CONTEXT or "G-SCOPE" in srv.PROCESS_CONTEXT, (
+            "Guardrail IDs (G-GIT-*, G-SCOPE-*) from 02-execution.md not found in PROCESS_CONTEXT"
+        )
+
+    def test_tool_response_includes_process_context(self, srv):
+        """A regular agent call must embed the process framework content."""
+        result = asyncio.run(srv.call_tool(
+            "maintenance_adaptive",
+            {"query": "migrate to Java 17", "domain": "java", "command": "analyze"},
+        ))
+        assert result
+        # Decision-tree file should be first — its heading must appear
+        first_heading = PROCESS_FILES[0].read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()
+        assert first_heading in result[0].text, (
+            "Process framework content not found in tool response"
+        )
+
+    def test_corrective_tool_response_includes_process_context(self, srv):
+        result = asyncio.run(srv.call_tool(
+            "maintenance_corrective",
+            {"query": "NPE in OrderService", "domain": "bug-report", "command": "analyze"},
+        ))
+        assert result
+        first_heading = PROCESS_FILES[0].read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()
+        assert first_heading in result[0].text
+
+    def test_route_no_match_includes_process_context(self, srv):
+        """Even the no-match fallback should include the decision-tree context."""
+        result = asyncio.run(srv.call_tool(
+            "maintenance_route",
+            {"query": "xxnomatchxx"},
+        ))
+        assert result
+        assert srv.PROCESS_CONTEXT in result[0].text or "Could not determine" in result[0].text
+
+    def test_process_files_loaded_in_order(self, srv):
+        """Files should appear in sorted (00-, 01-, 02-, 03-) order in context."""
+        if len(PROCESS_FILES) < 2:
+            pytest.skip("Need at least 2 _process files to test order")
+        first = PROCESS_FILES[0].read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()
+        last  = PROCESS_FILES[-1].read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()
+        assert srv.PROCESS_CONTEXT.index(first) < srv.PROCESS_CONTEXT.index(last), (
+            "_process files not concatenated in sorted order"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 9. Bug-report domain — agent loading, routing, and dispatch
 # ---------------------------------------------------------------------------
 
 
