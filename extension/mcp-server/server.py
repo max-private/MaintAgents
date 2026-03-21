@@ -216,6 +216,8 @@ def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
     md = md_path.read_text(encoding="utf-8") if md_path.exists() \
         else f"# {agent['name']}\n\nDocumentation not found."
 
+    suggestion = suggest_next(agent, command)
+
     task_lines = [
         "---",
         "## Active Task",
@@ -226,14 +228,19 @@ def read_agent_content(agent: dict, query: str = "", command: str = "") -> str:
         "Apply the relevant phase directly to the query.",
         "Produce concrete output: code diffs, migration steps, or fix recommendations — not a summary of what could be done.",
     ]
+    if suggestion:
+        task_lines += [
+            "",
+            "IMPORTANT: After your analysis, end your response with exactly this block verbatim:",
+            "",
+            "---",
+            suggestion,
+        ]
     task_block = "\n".join(line for line in task_lines if line is not None)
 
-    suggestion = suggest_next(agent, command)
-    suffix = f"\n\n---\n\n{suggestion}" if suggestion else ""
-
     if PROCESS_CONTEXT:
-        return f"{md}\n\n---\n\n{PROCESS_CONTEXT}\n\n{task_block}{suffix}"
-    return f"{md}\n\n{task_block}{suffix}"
+        return f"{md}\n\n---\n\n{PROCESS_CONTEXT}\n\n{task_block}"
+    return f"{md}\n\n{task_block}"
 
 
 def route_query(query: str, agents: list[dict], top_n: int = 3) -> list[dict]:
@@ -364,7 +371,11 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             f"`{top['tool_name']}(domain=\"{top['domain']}\", command=\"analyze\")` — "
             f"run the top matched agent directly with the full analyze phase."
         )
-        return [types.TextContent(type="text", text=f"{summary}\n\n{content}\n\n---\n\n{route_suggestion}")]
+        directive = (
+            f"\n\nIMPORTANT: End your response with exactly this block verbatim:\n\n"
+            f"---\n{route_suggestion}"
+        )
+        return [types.TextContent(type="text", text=f"{summary}\n\n{content}{directive}")]
 
     # Type-level tool: find agent by (type, domain)
     type_name = name.replace("maintenance_", "")
@@ -396,7 +407,7 @@ async def main() -> None:
             write_stream,
             InitializationOptions(
                 server_name="maintenance-agents",
-                server_version="3.0.4",
+                server_version="3.0.5",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
